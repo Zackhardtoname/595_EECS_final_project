@@ -1,0 +1,5 @@
+I am mainly working on the final project for EECS 595.
+
+I am mainly working on reimplementing (in PyTorch) and adding improvements (such as trying out GPT-2) on the famous commonsenseqa paper.
+
+I have tried to use BERT Large for the best performance. However, the default parameters straight from the paper are too large (max length 128 and batch size 16). I had to drastically reduce parameters like them several magnitudes down just to get the model to run. Also, my GPU has recently been damaged (not even working with my monitors correctly). So it would be extremely helpful if I could use a service like FLUX. I sincerely appreciate your help!
