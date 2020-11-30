@@ -22,6 +22,8 @@ import collections
 import unicodedata
 import six
 
+from transformers import BertTokenizer, BertModel
+
 
 def convert_to_unicode(text):
     """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
@@ -96,10 +98,13 @@ class FullTokenizer(object):
         self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
 
     def tokenize(self, text):
-        split_tokens = []
-        for token in self.basic_tokenizer.tokenize(text):
-            for sub_token in self.wordpiece_tokenizer.tokenize(token):
-                split_tokens.append(sub_token)
+        # split_tokens = []
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        split_tokens = tokenizer(text, return_tensors='pt')
+
+        # for token in self.basic_tokenizer.tokenize(text):
+        #     for sub_token in self.wordpiece_tokenizer.tokenize(token):
+        #         split_tokens.append(sub_token)
 
         return split_tokens
 

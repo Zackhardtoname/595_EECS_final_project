@@ -6,11 +6,17 @@ import os
 
 import numpy as np
 import pytorch_lightning as pl
-
+import tensorflow as tf
 import modeling
 import optimization
 import tokenization
 import hjson
+from transformers import BertTokenizer, BertModel
+from transformers import pipeline
+# pipeline()
+
+from datasets import load_dataset
+dataset = load_dataset("commonsense_qa")
 
 with open("config.hjson") as f:
     FLAGS = hjson.load(f)
@@ -121,56 +127,49 @@ def example_to_token_ids_segment_ids_label_ids(
     max_seq_length,
     tokenizer):
     """Converts an ``InputExample`` to token ids and segment ids."""
-    if ex_index < 5:
-        tf.logging.info(f"*** Example {ex_index} ***")
-        tf.logging.info("qid: %s" % (example.qid))
+    # input_ids: list of ids for the answers
+    # choice_segment_ids: list of 0 and then 1 representing the question and then answer
+    # label_id: a list of one element, the index of the answer
 
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     question_tokens = tokenizer.tokenize(example.question)
     answers_tokens = map(tokenizer.tokenize, example.answers)
 
-    token_ids = []
-    segment_ids = []
+    input_ids = []
+    token_type_ids = []
+    label_id = example.label
+
     for choice_idx, answer_tokens in enumerate(answers_tokens):
         truncated_question_tokens = question_tokens[
                                     :max((max_seq_length - 3) // 2, max_seq_length - (len(answer_tokens) + 3))]
         truncated_answer_tokens = answer_tokens[
                                   :max((max_seq_length - 3) // 2, max_seq_length - (len(question_tokens) + 3))]
+        encoding_dict = tokenizer(truncated_question_tokens, truncated_answer_tokens, return_tensors='pt')
+        input_ids.append(encoding_dict["input_ids"][0])
+        token_type_ids.append(encoding_dict["token_type_ids"][0])
 
-        choice_tokens = []
-        choice_segment_ids = []
-        choice_tokens.append("[CLS]")
-        choice_segment_ids.append(0)
-        for question_token in truncated_question_tokens:
-            choice_tokens.append(question_token)
-            choice_segment_ids.append(0)
-        choice_tokens.append("[SEP]")
-        choice_segment_ids.append(0)
-        for answer_token in truncated_answer_tokens:
-            choice_tokens.append(answer_token)
-            choice_segment_ids.append(1)
-        choice_tokens.append("[SEP]")
-        choice_segment_ids.append(1)
+        # choice_tokens = []
+        # choice_segment_ids = []
+        # choice_tokens.append("[CLS]")
+        # choice_segment_ids.append(0)
+        # for question_token in truncated_question_tokens:
+        #     choice_tokens.append(question_token)
+        #     choice_segment_ids.append(0)
+        # choice_tokens.append("[SEP]")
+        # choice_segment_ids.append(0)
+        #
+        # for answer_token in truncated_answer_tokens:
+        #     choice_tokens.append(answer_token)
+        #     choice_segment_ids.append(1)
+        # choice_tokens.append("[SEP]")
+        # choice_segment_ids.append(1)
 
-        choice_token_ids = tokenizer.convert_tokens_to_ids(choice_tokens)
+        # choice_token_ids = tokenizer.convert_tokens_to_ids(choice_tokens)
+        #
+        # input_ids.append(choice_token_ids)
+        # token_type_ids.append(choice_segment_ids)
 
-        token_ids.append(choice_token_ids)
-        segment_ids.append(choice_segment_ids)
-
-        if ex_index < 5:
-            tf.logging.info("choice %s" % choice_idx)
-            tf.logging.info("tokens: %s" % " ".join(
-                [tokenization.printable_text(t) for t in choice_tokens]))
-            tf.logging.info("token ids: %s" % " ".join(
-                [str(x) for x in choice_token_ids]))
-            tf.logging.info("segment ids: %s" % " ".join(
-                [str(x) for x in choice_segment_ids]))
-
-    label_ids = [example.label]
-
-    if ex_index < 5:
-        tf.logging.info("label: %s (id = %d)" % (example.label, label_ids[0]))
-
-    return token_ids, segment_ids, label_ids
+    return input_ids, token_type_ids, label_id
 
 
 def file_based_convert_examples_to_features(
@@ -178,11 +177,25 @@ def file_based_convert_examples_to_features(
     label_list,
     max_seq_length,
     tokenizer,
-    output_file
 ):
     """Convert a set of ``InputExamples`` to a TFRecord file."""
+    input_ids_batch = []
+    token_type_ids_batch = []
+    labels_batch = []
 
     # encode examples into token_ids and segment_ids
+    for ex_index, example in enumerate(examples):
+        input_ids, token_type_ids, label_id = example_to_token_ids_segment_ids_label_ids(
+                ex_index,
+                example,
+                max_seq_length,
+                tokenizer)
+        input_ids_batch.append(input_ids)
+        token_type_ids_batch.append(token_type_ids)
+        labels_batch.append(label_id)
+
+    return input_ids_batch, token_type_ids_batch, labels_batch
+
     token_ids_segment_ids_label_ids = [
         example_to_token_ids_segment_ids_label_ids(
             ex_index,
@@ -199,17 +212,13 @@ def file_based_convert_examples_to_features(
     ])
 
     # encode the inputs into fixed-length vectors
-    writer = tf.python_io.TFRecordWriter(output_file)
+    # writer = tf.python_io.TFRecordWriter(output_file)
 
     for idx, (token_ids, segment_ids, label_ids) in enumerate(
         token_ids_segment_ids_label_ids
     ):
-        if idx % 10000 == 0:
-            tf.logging.info("Writing %d of %d" % (
-                idx,
-                len(token_ids_segment_ids_label_ids)))
-
         features = collections.OrderedDict()
+
         for i, (choice_token_ids, choice_segment_ids) in enumerate(
             zip(token_ids, segment_ids)):
             input_ids = np.zeros(max_seq_length)
@@ -512,7 +521,7 @@ def model_fn_builder(
     return model_fn
 
 
-def main(_):
+def main():
     bert_config = modeling.BertConfig.from_json_file(FLAGS.bert_config_file)
 
     if FLAGS.max_seq_length > bert_config.max_position_embeddings:
@@ -527,6 +536,9 @@ def main(_):
 
     tokenizer = tokenization.FullTokenizer(
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
+
+    model = BertModel.from_pretrained('bert-base-uncased', return_dict=True)
+    model.train()
 
     # TODO TPU handling
 
@@ -559,15 +571,18 @@ def main(_):
 
     if FLAGS["do_train"]:
         print("train started")
-        train_file = os.path.join(FLAGS.output_dir, "train.tf_record")
-        train_seq_length = file_based_convert_examples_to_features(
-            train_examples, label_list, FLAGS.max_seq_length, tokenizer, train_file)
-        train_input_fn = file_based_input_fn_builder(
-            input_file=train_file,
-            seq_length=FLAGS.max_seq_length,
-            is_training=True,
-            drop_remainder=True)
-        estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+        # train_file = os.path.join(FLAGS.output_dir, "train.tf_record")
+        input_ids_batch, token_type_ids_batch, labels_batch = file_based_convert_examples_to_features(
+            train_examples, label_list, FLAGS.max_seq_length, tokenizer)
+
+
+
+        # train_input_fn = file_based_input_fn_builder(
+        #     input_file=train_file,
+        #     seq_length=FLAGS.max_seq_length,
+        #     is_training=True,
+        #     drop_remainder=True)
+        # estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
 
     if FLAGS["do_eval"]:
         print("eval started")
@@ -640,4 +655,4 @@ def main(_):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    main()
