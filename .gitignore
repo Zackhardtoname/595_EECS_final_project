@@ -1,5 +1,6 @@
 # csqa
 csqa/data/
+csqa/lightning_logs/
 
 # miscellaneous
 *.idea
