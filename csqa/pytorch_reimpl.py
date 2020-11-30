@@ -1,66 +1,57 @@
 import torch
 import os
+from datasets import load_dataset
+from transformers import BertTokenizer, BertForMultipleChoice
+import pytorch_lightning as pl
+from pytorch_lightning.callbacks import EarlyStopping
+import torch
 
-class CommonsenseQAProcessor:
-    """Processor for the CommonsenseQA data set."""
+dataset = load_dataset("commonsense_qa")
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
 
-    SPLITS = ['qtoken', 'rand']
-    LABELS = ['A', 'B', 'C', 'D', 'E']
+q = dataset["train"]["question"]
+rep_q = [item for item in q for _ in range(5)]
+c = dataset["train"]["choices"]
+expanded_c = [e for ele in c for e in ele["text"]]
+labels = dataset["train"]["answerKey"]
 
-    TRAIN_FILE_NAME = 'train_{split}_split.jsonl'
-    DEV_FILE_NAME = 'dev_{split}_split.jsonl'
-    TEST_FILE_NAME = 'test_{split}_split_no_answers.jsonl'
+encoding = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True, max_length=32)
+outputs = model(**{k: v for k,v in encoding.items()}, labels=labels)  # batch size is 1
 
-    def __init__(self, split):
-        if split not in self.SPLITS:
-            raise ValueError(
-                'split must be one of {", ".join(self.SPLITS)}.')
+# the linear classifier still needs to be trained
+loss = outputs.loss
+logits = outputs.logits
 
-        self.split = split
+class Model(pl.LightningModule):
 
-    def get_train_examples(self, data_dir):
-        train_file_name = self.TRAIN_FILE_NAME.format(split=self.split)
 
-        return self._create_examples(
-            self._read_jsonl(os.path.join(data_dir, train_file_name)),
-            'train')
+if __name__ == "__main__":
+    early_stop_callback = EarlyStopping(
+            monitor="val_loss",
+            min_delta=0.0,
+            patience=3,
+            verbose=True,
+            mode="min"
+            )
 
-    def get_dev_examples(self, data_dir):
-        dev_file_name = self.DEV_FILE_NAME.format(split=self.split)
+    trainer = pl.Trainer(
+            gpus=1,
+            early_stop_callback=early_stop_callback,
+            )
 
-        return self._create_examples(
-            self._read_jsonl(os.path.join(data_dir, dev_file_name)),
-            'dev')
+    model = Model()
 
-    def get_test_examples(self, data_dir):
-        test_file_name = self.TEST_FILE_NAME.format(split=self.split)
+    trainer.fit(model)
+    trainer.test()
 
-        return self._create_examples(
-            self._read_jsonl(os.path.join(data_dir, test_file_name)),
-            'test')
+# for ele in c:
+#     if len(ele["text"]) != 5:
+#         print(ele["text"])
 
-    def get_labels(self):
-        return [0, 1, 2, 3, 4]
-
-    def _create_examples(self, lines, set_type):
-        examples = []
-        for line in lines:
-            qid = line['id']
-            question = tokenization.convert_to_unicode(line['question']['stem'])
-            answers = np.array([
-                tokenization.convert_to_unicode(choice['text'])
-                for choice in sorted(
-                    line['question']['choices'],
-                    key=lambda c: c['label'])
-            ])
-            # the test set has no answer key so use 'A' as a dummy label
-            label = self.LABELS.index(line.get('answerKey', 'A'))
-
-            examples.append(
-                InputExample(
-                    qid=qid,
-                    question=question,
-                    answers=answers,
-                    label=label))
-
-        return examples
+# lens = [len(e) for e in rep_q]
+# max_len = max(lens)
+# max_len_idx = lens.index(max_len)
+# print(max_len, max_len_idx)
+# to_decode = tokenizer(rep_q[max_len_idx], rep_q[max_len_idx], return_tensors='pt', padding=True, truncation=True, max_length=32)["input_ids"][0]
+# print(tokenizer.decode(to_decode))

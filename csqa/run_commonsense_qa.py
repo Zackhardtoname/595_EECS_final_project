@@ -8,10 +8,10 @@ import numpy as np
 import pytorch_lightning as pl
 import tensorflow as tf
 import modeling
-import optimization
+# import optimization
 import tokenization
 import hjson
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel, BertForMultipleChoice
 from transformers import pipeline
 # pipeline()
 
@@ -66,7 +66,7 @@ class CommonsenseQAProcessor:
 
         return self._create_examples(
             self._read_jsonl(os.path.join(data_dir, train_file_name)),
-            'train')
+            )
 
     def get_dev_examples(self, data_dir):
         dev_file_name = self.DEV_FILE_NAME.format(split=self.split)
@@ -522,23 +522,24 @@ def model_fn_builder(
 
 
 def main():
-    bert_config = modeling.BertConfig.from_json_file(FLAGS.bert_config_file)
+    # bert_config = modeling.BertConfig.from_json_file(FLAGS["bert_config_file"])
 
-    if FLAGS.max_seq_length > bert_config.max_position_embeddings:
-        raise ValueError(
-            "Cannot use sequence length %d because the BERT model "
-            "was only trained up to sequence length %d" %
-            (FLAGS.max_seq_length, bert_config.max_position_embeddings))
+    # if FLAGS.max_seq_length > bert_config.max_position_embeddings:
+    #     raise ValueError(
+    #         "Cannot use sequence length %d because the BERT model "
+    #         "was only trained up to sequence length %d" %
+    #         (FLAGS.max_seq_length, bert_config.max_position_embeddings))
 
-    processor = CommonsenseQAProcessor(split=FLAGS.split)
+    processor = CommonsenseQAProcessor(split=FLAGS["split"])
 
     label_list = processor.get_labels()
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
+        # vocab_file=FLAGS["vocab_file"], do_lower_case=FLAGS["do_lower_case"]
+    )
 
-    model = BertModel.from_pretrained('bert-base-uncased', return_dict=True)
-    model.train()
+    model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
+    # model.train()
 
     # TODO TPU handling
 
@@ -547,7 +548,7 @@ def main():
     num_warmup_steps = None
 
     if FLAGS["do_train"]:
-        train_examples = processor.get_train_examples(FLAGS.data_dir)
+        train_examples = processor.get_train_examples(FLAGS["data_dir"])
 
     model_fn = model_fn_builder(
         bert_config=bert_config,
@@ -573,7 +574,7 @@ def main():
         print("train started")
         # train_file = os.path.join(FLAGS.output_dir, "train.tf_record")
         input_ids_batch, token_type_ids_batch, labels_batch = file_based_convert_examples_to_features(
-            train_examples, label_list, FLAGS.max_seq_length, tokenizer)
+            train_examples, label_list, FLAGS["max_seq_length"], tokenizer)
 
 
 
