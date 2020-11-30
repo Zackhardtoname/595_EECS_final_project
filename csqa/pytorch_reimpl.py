@@ -8,6 +8,9 @@ import torch
 import random
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, random_split
+import hjson
+
+NUM_CHOICES = 5
 
 
 def set_seed(seed):
@@ -35,11 +38,11 @@ class DictDataset(Dataset):
         return len(self.x["input_ids"])
 
     def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
+        # if torch.is_tensor(idx):
+        #     idx = idx.tolist()
 
-        sample = {key: x[key][idx] for key in x.keys()}
-        sample["labels"] = y[idx]
+        sample = {key: self.x[key][idx] for key in self.x.keys()}
+        sample["labels"] = self.y[idx]
 
         return sample
 
@@ -47,20 +50,20 @@ class DictDataset(Dataset):
 class Model(pl.LightningModule):
     def __init__(self):
         super().__init__()
-        self.model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
+        self.pretrained_model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
         self.accuracy = pl.metrics.Accuracy()
 
     def training_step(self, batch, batch_idx):
-        outputs = model(**batch)
+        outputs = self.pretrained_model(**batch)
         loss = outputs.loss
         logits = outputs.logits
-        self.log(f'batch {batch_idx} training acc', self.accuracy(logits, y))
+        self.log(f'batch {batch_idx} training acc', self.accuracy(logits, batch["labels"]))
         return loss
 
-    # def forward(self, x):
-    #     # in lightning, forward defines the prediction/inference actions
-    #     outputs = model.forward(**x)
-    #     return outputs.logits
+    def forward(self, **x):
+        # in lightning, forward defines the prediction/inference actions
+        outputs = self.pretrained_model(**x)
+        return outputs.logits
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
@@ -77,6 +80,10 @@ if __name__ == "__main__":
     )
 
     set_seed(42)
+
+    with open("config.hjson") as f:
+        config = hjson.load(f)
+
     dataset = load_dataset("commonsense_qa")
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
@@ -84,16 +91,17 @@ if __name__ == "__main__":
     rep_q = [item for item in q for _ in range(5)]
     c = dataset["train"]["choices"]
     expanded_c = [e for ele in c for e in ele["text"]]
-    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True, max_length=32).data
+    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True, max_length=config["max_seq_length"]).data
+    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"]) for k, v in x.items()}
     y = dataset["train"]["answerKey"]
-    rep_y = [item for item in y for _ in range(5)]
+    y = torch.tensor([ord(item) - ord("A") for item in y])
 
     trainer = pl.Trainer(
         gpus=1,
     )
     model = Model()
 
-    trainer.fit(model, DataLoader(DictDataset(x, rep_y)))
+    trainer.fit(model, DataLoader(DictDataset(x, y), batch_size=16))
     trainer.test()
 
 # for ele in c:
