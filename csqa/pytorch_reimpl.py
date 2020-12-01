@@ -1,6 +1,7 @@
 import torch
 import os
 from datasets import load_dataset
+from torch.nn import CrossEntropyLoss
 from transformers import BertTokenizer, BertForMultipleChoice
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import EarlyStopping
@@ -45,7 +46,8 @@ class DictDataset(Dataset):
 def acc_from_logits_and_labels(logits, labels):
     pred = torch.argmax(logits, dim=1)
     labels.to(pred.device)
-    acc = (labels == pred) / labels.shape[0]
+    # acc = CrossEntropyLoss(logits, labels)
+    acc = labels.eq(pred).sum() / labels.shape[0]
     return acc
 
 
@@ -79,6 +81,8 @@ class Model(pl.LightningModule):
         acc = acc_from_logits_and_labels(reshaped_logits, labels)
         self.log(f"batch {batch_idx} val_loss", loss)
         self.log(f"batch {batch_idx} val_acc", acc)
+        # print(loss.shape)
+        # print(loss)
         return loss
 
     def testing_step(self, batch, batch_idx):
@@ -139,7 +143,8 @@ if __name__ == "__main__":
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     trainer = pl.Trainer(
-        # gpus=1,
+        gpus=1,
+        # log_every_n_steps=1
     )
     model = Model()
     x_train, y_train = preprocess(dataset["train"])
