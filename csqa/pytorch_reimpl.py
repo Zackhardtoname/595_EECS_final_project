@@ -2,7 +2,7 @@ import torch
 import os
 from datasets import load_dataset
 from torch.nn import CrossEntropyLoss
-from transformers import BertTokenizer, BertForMultipleChoice
+from transformers import BertTokenizer, BertTokenizerFast, BertForMultipleChoice
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import EarlyStopping
 import torch
@@ -11,6 +11,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader, random_split
 import hjson
 from torch.utils.tensorboard import SummaryWriter
+from pytorch_lightning.loggers import TensorBoardLogger
 
 NUM_CHOICES = 5
 writer = SummaryWriter()
@@ -40,7 +41,7 @@ class DictDataset(Dataset):
         sample = {key: self.x[key][idx] for key in self.x.keys()}
         sample["labels"] = self.y[idx]
 
-        return sample
+        return sample  # , sample["labels"]
 
 
 def acc_from_logits_and_labels(logits, labels):
@@ -57,10 +58,13 @@ class Model(pl.LightningModule):
         self.pretrained_model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
 
     def training_step(self, batch, batch_idx):
+        labels = batch["labels"]
+        # batch.pop("labels", None)
         outputs = self.forward(**batch)
         loss = outputs.loss
         logits = outputs.logits
-        self.log(f'batch {batch_idx} training acc', acc_from_logits_and_labels(logits, batch["labels"]))
+        self.log(f'train_loss', loss)
+        self.log(f'train_acc', acc_from_logits_and_labels(logits, labels))
         return loss
 
     def forward(self, **x):
@@ -69,20 +73,14 @@ class Model(pl.LightningModule):
         return outputs
 
     def validation_step(self, batch, batch_idx):
-        labels = batch["labels"]
-        batch.pop("labels", None)
-
         outputs = self.forward(
             **batch
         )
-
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
-        acc = acc_from_logits_and_labels(reshaped_logits, labels)
-        self.log(f"batch {batch_idx} val_loss", loss)
-        self.log(f"batch {batch_idx} val_acc", acc)
-        # print(loss.shape)
-        # print(loss)
+        acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"])
+        self.log(f"val_loss", loss)
+        self.log(f"val_acc", acc)
         return loss
 
     def testing_step(self, batch, batch_idx):
@@ -111,15 +109,16 @@ class Model(pl.LightningModule):
         return optimizer
 
 
-def preprocess(data):
+def preprocess(data, trim=False):
     q = data["question"]
     rep_q = [item for item in q for _ in range(5)]
     c = data["choices"]
     expanded_c = [e for ele in c for e in ele["text"]]
     x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
                   max_length=config["max_seq_length"]).data
-    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"]) for k, v in x.items()}
-    y = data["answerKey"]
+    end = 20 if trim else len(x["input_ids"])
+    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"])[:end] for k, v in x.items()}
+    y = data["answerKey"][:end]
     y = torch.tensor([ord(item) - ord("A") for item in y])
 
     return x, y
@@ -141,10 +140,13 @@ if __name__ == "__main__":
 
     dataset = load_dataset("commonsense_qa")
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    logger = TensorBoardLogger('lightning_logs', name='my_model')
 
     trainer = pl.Trainer(
+        logger=logger,
         gpus=1,
-        # log_every_n_steps=1
+        log_every_n_steps=5,  # each batch is a step
+        max_epochs=config["max_epochs"]
     )
     model = Model()
     x_train, y_train = preprocess(dataset["train"])
