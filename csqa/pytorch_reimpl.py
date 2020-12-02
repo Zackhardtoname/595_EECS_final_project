@@ -150,7 +150,7 @@ class Model(pl.LightningModule):
         self.log("test acc", sum(acc_li) / len(acc_li))
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.model_config["lr"])
         return optimizer
 
     def train_dataloader(self):
