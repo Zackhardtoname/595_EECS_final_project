@@ -1,4 +1,5 @@
 import torch
+from functools import partial
 import os
 from datasets import load_dataset
 from torch.nn import CrossEntropyLoss
@@ -12,9 +13,41 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import hjson
 from torch.utils.tensorboard import SummaryWriter
 from pytorch_lightning.loggers import TensorBoardLogger
+from torch.nn import functional as F
+import pytorch_lightning as pl
+import os
+import ray.tune as tune
+from ray.tune.integration.pytorch_lightning import TuneReportCallback
+
+pl.seed_everything(42)
+use_gpu = 1
+
+with open("config.hjson") as f:
+    config = hjson.load(f)
 
 NUM_CHOICES = 5
 writer = SummaryWriter()
+
+
+def preprocess(data, trim=False):
+    q = data["question"]
+    rep_q = [item for item in q for _ in range(5)]
+    c = data["choices"]
+    expanded_c = [e for ele in c for e in ele["text"]]
+    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
+                  max_length=config["max_seq_length"]).data
+    end = 20 if trim else len(x["input_ids"])
+    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"])[:end] for k, v in x.items()}
+    y = data["answerKey"][:end]
+    y = torch.tensor([ord(item) - ord("A") for item in y])
+
+    return x, y
+
+
+dataset = load_dataset("commonsense_qa")
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+x_train, y_train = preprocess(dataset["train"])
+x_val, y_val = preprocess(dataset["validation"])
 
 
 class DictDataset(Dataset):
@@ -44,18 +77,21 @@ class DictDataset(Dataset):
         return sample  # , sample["labels"]
 
 
-def acc_from_logits_and_labels(logits, labels):
-    pred = torch.argmax(logits, dim=1)
-    labels.to(pred.device)
-    # acc = CrossEntropyLoss(logits, labels)
-    acc = labels.eq(pred).sum() / labels.shape[0]
+def acc_from_logits_and_labels(logits, labels, accuracy_fn):
+    acc = accuracy_fn(logits.cpu(), labels.cpu())
+    # pred = torch.argmax(logits, dim=1)
+    # labels.to(pred.device)
+    # # acc = CrossEntropyLoss(logits, labels)
+    # acc = labels.eq(pred).sum() / labels.shape[0]
     return acc
 
 
 class Model(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, model_config):
         super().__init__()
         self.pretrained_model = BertForMultipleChoice.from_pretrained('bert-base-uncased', return_dict=True)
+        self.accuracy = pl.metrics.Accuracy()
+        self.model_config = model_config
 
     def training_step(self, batch, batch_idx):
         labels = batch["labels"]
@@ -64,7 +100,8 @@ class Model(pl.LightningModule):
         loss = outputs.loss
         logits = outputs.logits
         self.log(f'train_loss', loss)
-        self.log(f'train_acc', acc_from_logits_and_labels(logits, labels))
+        acc = acc_from_logits_and_labels(logits, labels, self.accuracy)
+        self.log(f'train_acc', acc)
         return loss
 
     def forward(self, **x):
@@ -78,10 +115,18 @@ class Model(pl.LightningModule):
         )
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
-        acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"])
+        acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
         self.log(f"val_loss", loss)
         self.log(f"val_acc", acc)
         return loss
+
+    # def validation_epoch_end(self, outputs):
+    #     avg_loss = torch.stack(
+    #         [x["val_loss"] for x in outputs]).mean()
+    #     avg_acc = torch.stack(
+    #         [x["val_accuracy"] for x in outputs]).mean()
+    #     self.log("ptl/val_loss", avg_loss)
+    #     self.log("ptl/val_accuracy", avg_acc)
 
     def testing_step(self, batch, batch_idx):
         labels = batch["labels"]
@@ -93,7 +138,7 @@ class Model(pl.LightningModule):
 
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
-        acc = acc_from_logits_and_labels(reshaped_logits, labels)
+        acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
 
         return {
             "loss": loss,
@@ -108,20 +153,15 @@ class Model(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
 
+    def train_dataloader(self):
+        return DataLoader(DictDataset(x_train, y_train), batch_size=self.model_config["batch_size"],
+                          num_workers=8)
 
-def preprocess(data, trim=False):
-    q = data["question"]
-    rep_q = [item for item in q for _ in range(5)]
-    c = data["choices"]
-    expanded_c = [e for ele in c for e in ele["text"]]
-    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
-                  max_length=config["max_seq_length"]).data
-    end = 20 if trim else len(x["input_ids"])
-    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"])[:end] for k, v in x.items()}
-    y = data["answerKey"][:end]
-    y = torch.tensor([ord(item) - ord("A") for item in y])
+    def val_dataloader(self):
+        return DataLoader(DictDataset(x_val, y_val), batch_size=self.model_config["batch_size"], num_workers=8)
 
-    return x, y
+    def test_dataloader(self):
+        return self.val_dataloader()
 
 
 if __name__ == "__main__":
@@ -133,30 +173,52 @@ if __name__ == "__main__":
         mode="min"
     )
 
-    pl.seed_everything(42)
+    rt_config = {
+        "lr": tune.loguniform(1e-4, 1e-1),
+        "batch_size": tune.choice([32, 64, 128])
+    }
 
-    with open("config.hjson") as f:
-        config = hjson.load(f)
+    # logger = TensorBoardLogger('lightning_logs', name='my_model')
 
-    dataset = load_dataset("commonsense_qa")
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    logger = TensorBoardLogger('lightning_logs', name='my_model')
+    # trainer = pl.Trainer(
+    #     logger=logger,
+        # log_every_n_steps=5,  # each batch is a step
+        # gpus=1,
+        # max_epochs=config["max_epochs"]
+    # )
+    # model = Model()
 
-    trainer = pl.Trainer(
-        logger=logger,
-        gpus=1,
-        log_every_n_steps=5,  # each batch is a step
-        max_epochs=config["max_epochs"]
-    )
-    model = Model()
-    x_train, y_train = preprocess(dataset["train"])
-    x_val, y_val = preprocess(dataset["validation"])
     # x_test, y_test = preprocess(dataset["test"])
 
-    trainer.fit(
-        model,
-        DataLoader(DictDataset(x_train, y_train), batch_size=config["train_batch_size"], num_workers=8),
-        DataLoader(DictDataset(x_val, y_val), batch_size=config["val_batch_size"], num_workers=8),
-    )
+    # trainer.fit(
+    #     model,
+    #     DataLoader(DictDataset(x_train, y_train), batch_size=config["train_batch_size"], num_workers=8),
+    #     DataLoader(DictDataset(x_val, y_val), batch_size=config["val_batch_size"], num_workers=8),
+    # )
+    callback = TuneReportCallback(
+        {
+            "loss": "val_loss",
+            "mean_accuracy": "val_accuracy"
+        },
+        on="validation_end")
 
+
+    def train_tune(config, epochs=10, gpus=0):
+        model = Model(config)
+        trainer = pl.Trainer(
+            max_epochs=epochs,
+            gpus=gpus,
+            progress_bar_refresh_rate=0,
+            callbacks=[callback])
+        trainer.fit(model)
+
+
+    analysis = tune.run(
+        partial(
+            train_tune, epochs=3, gpus=use_gpu,
+        ),
+        config=rt_config,
+        num_samples=3)
+
+    print(analysis.best_config)
     # trainer.test(test_dataloaders=DataLoader(DictDataset(x_test, y_test), batch_size=config["test_batch_size"]))
