@@ -21,7 +21,7 @@
     "iterations_per_loop": 1000
     "split": rand
     "seed": 42
-    "use_gpu" = 1
+    "use_gpu": 1
 
     "bert_config_file": bert
     "vocab_file": bert/vocab.txt
