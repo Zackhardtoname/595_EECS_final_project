@@ -23,8 +23,7 @@ import json
 import math
 import os
 import random
-import modeling
-import optimization
+from direct_modifications import optimization, modeling
 import tokenization
 import six
 import tensorflow as tf

@@ -5,20 +5,18 @@ import json
 import os
 
 import numpy as np
-import pytorch_lightning as pl
 import tensorflow as tf
-import modeling
+from direct_modifications import modeling
 # import optimization
 import tokenization
 import hjson
-from transformers import BertTokenizer, BertModel, BertForMultipleChoice
-from transformers import pipeline
+from transformers import BertTokenizer, BertForMultipleChoice
 # pipeline()
 
 from datasets import load_dataset
 dataset = load_dataset("commonsense_qa")
 
-with open("config.hjson") as f:
+with open("../config.hjson") as f:
     FLAGS = hjson.load(f)
 
 for key, val in FLAGS.items():
