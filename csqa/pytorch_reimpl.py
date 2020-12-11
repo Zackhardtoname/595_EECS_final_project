@@ -50,7 +50,7 @@ pretrained_model_name = "bert-base-uncased"
 # pretrained_model_name = "bert-large-uncased"
 dataset = load_dataset("commonsense_qa")
 tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
-x_train, y_train = preprocess(dataset["train"], to_trim)
+x_train, y_train = preprocess(dataset["validation"], to_trim)
 x_val, y_val = preprocess(dataset["validation"], to_trim)
 
 
@@ -215,7 +215,7 @@ if __name__ == "__main__":
         on="validation_end")
 
 
-    def train_tune(config, epochs=3, gpus=0):
+    def train_tune(config, epochs=3, gpus=1):
         model = Model(config)
         trainer = pl.Trainer(
             max_epochs=epochs,
@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
     analysis = tune.run(
         partial(
-            train_tune, epochs=3, gpus=use_gpu,
+            train_tune, epochs=10, gpus=use_gpu,
         ),
         config=rt_config,
         num_samples=1,
