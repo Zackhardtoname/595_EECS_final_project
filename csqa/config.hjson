@@ -2,10 +2,10 @@
     "do_train": True
     "do_eval": True
     "do_predict": False
-    "train_batch_size": 16
+    "train_batch_size": 4
     "val_batch_size": 4
     "predict_batch_size": 8
-    "max_seq_length": 128
+    "max_seq_length": 32
     "learning_rate": 2e-5
     "max_epochs": 5.0
     "warmup_proportion": 0.1

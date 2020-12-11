@@ -22,6 +22,7 @@ import ray
 
 pl.seed_everything(42)
 use_gpu = 1
+to_trim = True
 
 with open("config.hjson") as f:
     config = hjson.load(f)
@@ -37,19 +38,20 @@ def preprocess(data, trim=False):
     expanded_c = [e for ele in c for e in ele["text"]]
     x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
                   max_length=config["max_seq_length"]).data
-    end = 20 if trim else len(x["input_ids"])
+    end = 200 if trim else len(x["input_ids"])
     x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"])[:end] for k, v in x.items()}
     y = data["answerKey"][:end]
     y = torch.tensor([ord(item) - ord("A") for item in y])
 
     return x, y
 
+
 pretrained_model_name = "bert-base-uncased"
 # pretrained_model_name = "bert-large-uncased"
 dataset = load_dataset("commonsense_qa")
 tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
-x_train, y_train = preprocess(dataset["train"])
-x_val, y_val = preprocess(dataset["validation"])
+x_train, y_train = preprocess(dataset["train"], to_trim)
+x_val, y_val = preprocess(dataset["validation"], to_trim)
 
 
 class DictDataset(Dataset):
@@ -92,9 +94,9 @@ class Model(pl.LightningModule):
     def __init__(self, model_config):
         super().__init__()
         self.pretrained_model = BertForMultipleChoice.from_pretrained(pretrained_model_name, return_dict=True)
-        self.train_accuracy = pl.metrics.Accuracy()
-        self.val_accuracy = pl.metrics.Accuracy()
+        self.accuracy = pl.metrics.Accuracy()
         self.model_config = model_config
+        self.batch_size = 32
 
     def training_step(self, batch, batch_idx):
         labels = batch["labels"]
@@ -103,7 +105,7 @@ class Model(pl.LightningModule):
         loss = outputs.loss
         logits = outputs.logits
         self.log(f'train_loss', loss)
-        acc = acc_from_logits_and_labels(logits, labels, self.train_accuracy)
+        acc = acc_from_logits_and_labels(logits, labels, self.accuracy)
         self.log(f'train_acc', acc)
         return loss
 
@@ -118,45 +120,54 @@ class Model(pl.LightningModule):
         )
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
-        acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.val_accuracy)
-        self.log(f"val_loss", loss)
-        self.log(f"val_acc", acc)
-        return loss
-
-    def validation_epoch_end(self, outputs):
-        self.log('train_acc_epoch', self.val_accuracy.compute())
-
-    def testing_step(self, batch, batch_idx):
-        labels = batch["labels"]
-        batch.pop("labels", None)
-
-        outputs = self.forward(
-            **batch
-        )
-
-        loss = outputs.loss
-        reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
-        acc = acc_from_logits_and_labels(reshaped_logits, labels, self.train_accuracy)
-
+        acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
+        self.log(f"val_step_acc", acc)
+        self.log(f"val_step_loss", loss)
         return {
-            "loss": loss,
-            "acc": acc
+            "val_step_loss": loss,
+            "val_step_acc": acc,
         }
 
-    def testing_epoch_end(self, outputs):
-        acc_li = [output["acc"] for output in outputs]
-        self.log("test acc", sum(acc_li) / len(acc_li))
+    def validation_epoch_end(self, outputs):
+        # print(outputs)
+        avg_loss = torch.tensor(
+            [x["val_step_loss"] for x in outputs]).mean()
+        avg_acc = torch.tensor(
+            [x["val_step_acc"] for x in outputs]).mean()
+        self.log("val_epoch_loss", avg_loss)
+        self.log("val_epoch_acc", avg_acc)
+
+    # def testing_step(self, batch, batch_idx):
+    #     labels = batch["labels"]
+    #     batch.pop("labels", None)
+    #
+    #     outputs = self.forward(
+    #         **batch
+    #     )
+    #
+    #     loss = outputs.loss
+    #     reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
+    #     acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
+    #
+    #     return {
+    #         "loss": loss,
+    #         "acc": acc
+    #     }
+    #
+    # def testing_epoch_end(self, outputs):
+    #     acc_li = [output["acc"] for output in outputs]
+    #     self.log("test acc", sum(acc_li) / len(acc_li))
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.model_config.get("lr", 2e-5))
         return optimizer
 
     def train_dataloader(self):
-        return DataLoader(DictDataset(x_train, y_train), batch_size=self.model_config["batch_size"],
+        return DataLoader(DictDataset(x_train, y_train), batch_size=self.batch_size,
                           num_workers=8)
 
     def val_dataloader(self):
-        return DataLoader(DictDataset(x_val, y_val), batch_size=self.model_config["batch_size"], num_workers=8)
+        return DataLoader(DictDataset(x_val, y_val), batch_size=self.batch_size, num_workers=8)
 
     def test_dataloader(self):
         return self.val_dataloader()
@@ -164,7 +175,7 @@ class Model(pl.LightningModule):
 
 if __name__ == "__main__":
     early_stop_callback = EarlyStopping(
-        monitor="val_loss",
+        monitor="val_epoch_loss",
         min_delta=0.0,
         patience=3,
         verbose=True,
@@ -175,7 +186,7 @@ if __name__ == "__main__":
         ray.init(num_gpus=1)
 
     rt_config = {
-        "lr": tune.loguniform(2e-6, 2e-2),
+        "lr": tune.loguniform(1e-4, 1e-1),
         # "batch_size": tune.choice([32, 64, 128])
     }
 
@@ -183,9 +194,9 @@ if __name__ == "__main__":
 
     # trainer = pl.Trainer(
     #     logger=logger,
-        # log_every_n_steps=5,  # each batch is a step
-        # gpus=1,
-        # max_epochs=config["max_epochs"]
+    # log_every_n_steps=5,  # each batch is a step
+    # gpus=1,
+    # max_epochs=config["max_epochs"]
     # )
     # model = Model()
 
@@ -198,8 +209,8 @@ if __name__ == "__main__":
     # )
     callback = TuneReportCallback(
         {
-            "loss": "val_loss",
-            "mean_accuracy": "val_acc"
+            "loss": "val_epoch_loss",
+            "acc": "val_epoch_acc"
         },
         on="validation_end")
 
@@ -207,25 +218,26 @@ if __name__ == "__main__":
     def train_tune(config, epochs=3, gpus=0):
         model = Model(config)
         trainer = pl.Trainer(
-            auto_lr_find=True,
-            auto_scale_batch_size=True,
             max_epochs=epochs,
             gpus=gpus,
-            progress_bar_refresh_rate=20,
+            # auto_scale_batch_size="power",
+            # progress_bar_refresh_rate=20,
             callbacks=[callback])
         trainer.fit(model)
 
 
     analysis = tune.run(
         partial(
-            train_tune, epochs=3, gpus=use_gpu,
+            train_tune, epochs=1, gpus=use_gpu,
         ),
         config=rt_config,
         num_samples=3,
         resources_per_trial={
-            "cpu": 2,
+            "cpu": 10,
             "gpu": use_gpu
-        }
+        },
+        metric="acc",
+        mode="max",
     )
 
     print(analysis.best_config)
