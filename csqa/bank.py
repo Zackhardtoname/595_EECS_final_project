@@ -17,3 +17,26 @@ b = a.clone()
 b = b.cuda()
 accuracy = pl.metrics.Accuracy()
 print(accuracy(a, b))
+
+# logger = TensorBoardLogger('lightning_logs', name='my_model')
+
+# trainer = pl.Trainer(
+#     logger=logger,
+# log_every_n_steps=5,  # each batch is a step
+# gpus=1,
+# max_epochs=config["max_epochs"]
+# )
+# model = Model()
+
+# x_test, y_test = preprocess(dataset["test"])
+
+# trainer.fit(
+#     model,
+#     DataLoader(DictDataset(x_train, y_train), batch_size=config["train_batch_size"], num_workers=8),
+#     DataLoader(DictDataset(x_val, y_val), batch_size=config["val_batch_size"], num_workers=8),
+# )
+
+# pred = torch.argmax(logits, dim=1)
+# labels.to(pred.device)
+# # acc = CrossEntropyLoss(logits, labels)
+# acc = labels.eq(pred).sum() / labels.shape[0]

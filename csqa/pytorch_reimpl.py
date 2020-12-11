@@ -1,37 +1,24 @@
-import torch
 from functools import partial
-import os
-from datasets import load_dataset
-from torch.nn import CrossEntropyLoss
-from transformers import BertTokenizer, BertTokenizerFast, BertForMultipleChoice
-import pytorch_lightning as pl
-from pytorch_lightning.callbacks import EarlyStopping
-import torch
-import random
-import numpy as np
-from torch.utils.data import Dataset, DataLoader, random_split
+
 import hjson
-from torch.utils.tensorboard import SummaryWriter
-from pytorch_lightning.loggers import TensorBoardLogger
-from torch.nn import functional as F
 import pytorch_lightning as pl
-import os
-import ray.tune as tune
-from ray.tune.integration.pytorch_lightning import TuneReportCallback
 import ray
+import ray.tune as tune
+import torch
+from datasets import load_dataset
+from pytorch_lightning.callbacks import EarlyStopping
+from ray.tune.integration.pytorch_lightning import TuneReportCallback
+from torch.utils.data import Dataset, DataLoader
+from transformers import BertTokenizer, BertForMultipleChoice
 
-pl.seed_everything(42)
-use_gpu = 1
-to_trim = False
-
+NUM_CHOICES = 5
 with open("config.hjson") as f:
     config = hjson.load(f)
 
-NUM_CHOICES = 5
-writer = SummaryWriter()
+pl.seed_everything(config["seed"])
 
 
-def preprocess(data, trim=False):
+def preprocess(data, tokenizer, trim=False):
     q = data["question"]
     rep_q = [item for item in q for _ in range(5)]
     c = data["choices"]
@@ -46,25 +33,8 @@ def preprocess(data, trim=False):
     return x, y
 
 
-pretrained_model_name = "bert-base-uncased"
-# pretrained_model_name = "bert-large-uncased"
-dataset = load_dataset("commonsense_qa")
-tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
-x_train, y_train = preprocess(dataset["validation"], to_trim)
-x_val, y_val = preprocess(dataset["validation"], to_trim)
-
-
 class DictDataset(Dataset):
-    """Face Landmarks dataset."""
-
     def __init__(self, x, y):
-        """
-        Args:
-            csv_file (string): Path to the csv file with annotations.
-            root_dir (string): Directory with all the images.
-            transform (callable, optional): Optional transform to be applied
-                on a sample.
-        """
         self.x = x
         self.y = y
 
@@ -72,35 +42,30 @@ class DictDataset(Dataset):
         return len(self.x["input_ids"])
 
     def __getitem__(self, idx):
-        # if torch.is_tensor(idx):
-        #     idx = idx.tolist()
-
         sample = {key: self.x[key][idx] for key in self.x.keys()}
         sample["labels"] = self.y[idx]
-
-        return sample  # , sample["labels"]
+        return sample
 
 
 def acc_from_logits_and_labels(logits, labels, accuracy_fn):
     acc = accuracy_fn(logits.cpu(), labels.cpu())
-    # pred = torch.argmax(logits, dim=1)
-    # labels.to(pred.device)
-    # # acc = CrossEntropyLoss(logits, labels)
-    # acc = labels.eq(pred).sum() / labels.shape[0]
     return acc
 
 
 class Model(pl.LightningModule):
     def __init__(self, model_config):
         super().__init__()
-        self.pretrained_model = BertForMultipleChoice.from_pretrained(pretrained_model_name, return_dict=True)
+        dataset = load_dataset("commonsense_qa")
+        tokenizer = BertTokenizer.from_pretrained(config["pretrained_model_name"])
+        self.x_train, self.y_train = preprocess(dataset["validation"], tokenizer, config["to_trim"])
+        self.x_val, self.y_val = preprocess(dataset["validation"], tokenizer, config["to_trim"])
+        self.pretrained_model = BertForMultipleChoice.from_pretrained(config["pretrained_model_name"], return_dict=True)
         self.accuracy = pl.metrics.Accuracy()
         self.model_config = model_config
         self.batch_size = 32
 
     def training_step(self, batch, batch_idx):
         labels = batch["labels"]
-        # batch.pop("labels", None)
         outputs = self.forward(**batch)
         loss = outputs.loss
         logits = outputs.logits
@@ -163,11 +128,11 @@ class Model(pl.LightningModule):
         return optimizer
 
     def train_dataloader(self):
-        return DataLoader(DictDataset(x_train, y_train), batch_size=self.batch_size,
+        return DataLoader(DictDataset(self.x_train, self.y_train), batch_size=self.batch_size,
                           num_workers=8)
 
     def val_dataloader(self):
-        return DataLoader(DictDataset(x_val, y_val), batch_size=self.batch_size, num_workers=8)
+        return DataLoader(DictDataset(self.x_val, self.y_val), batch_size=self.batch_size, num_workers=8)
 
     def test_dataloader(self):
         return self.val_dataloader()
@@ -182,7 +147,7 @@ if __name__ == "__main__":
         mode="min"
     )
 
-    if use_gpu:
+    if config["use_gpu"]:
         ray.init(num_gpus=1)
 
     rt_config = {
@@ -190,23 +155,6 @@ if __name__ == "__main__":
         "batch_size": tune.choice([32])
     }
 
-    # logger = TensorBoardLogger('lightning_logs', name='my_model')
-
-    # trainer = pl.Trainer(
-    #     logger=logger,
-    # log_every_n_steps=5,  # each batch is a step
-    # gpus=1,
-    # max_epochs=config["max_epochs"]
-    # )
-    # model = Model()
-
-    # x_test, y_test = preprocess(dataset["test"])
-
-    # trainer.fit(
-    #     model,
-    #     DataLoader(DictDataset(x_train, y_train), batch_size=config["train_batch_size"], num_workers=8),
-    #     DataLoader(DictDataset(x_val, y_val), batch_size=config["val_batch_size"], num_workers=8),
-    # )
     callback = TuneReportCallback(
         {
             "loss": "val_epoch_loss",
@@ -228,13 +176,13 @@ if __name__ == "__main__":
 
     analysis = tune.run(
         partial(
-            train_tune, epochs=10, gpus=use_gpu,
+            train_tune, epochs=1, gpus=config["use_gpu"],
         ),
         config=rt_config,
         num_samples=1,
         resources_per_trial={
             "cpu": 10,
-            "gpu": use_gpu
+            "gpu": config["use_gpu"]
         },
         metric="acc",
         mode="max",
