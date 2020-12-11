@@ -2,6 +2,7 @@
 csqa/data/
 csqa/lightning_logs/
 csqa/runs/
+.~*.odt*
 
 # miscellaneous
 *.idea
