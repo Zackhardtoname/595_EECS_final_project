@@ -22,7 +22,7 @@ import ray
 
 pl.seed_everything(42)
 use_gpu = 1
-to_trim = True
+to_trim = False
 
 with open("config.hjson") as f:
     config = hjson.load(f)
@@ -186,8 +186,8 @@ if __name__ == "__main__":
         ray.init(num_gpus=1)
 
     rt_config = {
-        "lr": tune.loguniform(1e-4, 1e-1),
-        # "batch_size": tune.choice([32, 64, 128])
+        # "lr": tune.loguniform(1e-4, 1e-1),
+        "batch_size": tune.choice([32])
     }
 
     # logger = TensorBoardLogger('lightning_logs', name='my_model')
@@ -228,10 +228,10 @@ if __name__ == "__main__":
 
     analysis = tune.run(
         partial(
-            train_tune, epochs=1, gpus=use_gpu,
+            train_tune, epochs=3, gpus=use_gpu,
         ),
         config=rt_config,
-        num_samples=3,
+        num_samples=1,
         resources_per_trial={
             "cpu": 10,
             "gpu": use_gpu
@@ -240,5 +240,5 @@ if __name__ == "__main__":
         mode="max",
     )
 
-    print(analysis.best_config)
+    print("Best config: ", analysis.best_config)
     # trainer.test(test_dataloaders=DataLoader(DictDataset(x_test, y_test), batch_size=config["test_batch_size"]))
