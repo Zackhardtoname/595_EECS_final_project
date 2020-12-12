@@ -1,10 +1,12 @@
 {
+    # lowercase bool names for hjson
+
     # debugging
-    "to_trim": False
+    "to_trim": false
     "pretrained_model_name": "bert-base-uncased"  # "bert-large-uncased"
-    "do_train": True
-    "do_eval": True
-    "do_predict": False
+    "do_train": true
+    "do_eval": true
+    "do_predict": false
     "train_batch_size": 4
     "val_batch_size": 4
     "predict_batch_size": 8
@@ -12,11 +14,11 @@
     "learning_rate": 2e-5
     "max_epochs": 5.0
     "warmup_proportion": 0.1
-    "use_tpu": False
+    "use_tpu": false
     "tpu_name": None
 
     # probably fixed
-    "do_lower_case": True
+    "do_lower_case": true
     "save_checkpoints_steps": 1000
     "iterations_per_loop": 1000
     "split": rand
