@@ -20,6 +20,7 @@
     "save_checkpoints_steps": 1000
     "iterations_per_loop": 1000
     "split": rand
+    "test_size": 1200
     "seed": 42
     "use_gpu": 1
 
