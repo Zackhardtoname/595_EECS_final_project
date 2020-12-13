@@ -24,7 +24,7 @@ pl.seed_everything(config["seed"])
 train_step = 0
 
 
-def preprocess(data, tokenizer, max_length=config["max_seq_length"], trim=False):
+def preprocess(data, tokenizer, max_length, trim=False):
     q = data["question"]
     rep_q = [item for item in q for _ in range(5)]
     c = data["choices"]
@@ -198,24 +198,12 @@ if __name__ == "__main__":
 
     if config["use_gpu"]:
         ray.init(num_gpus=1)
-    # rt_config = {
-    #     "lr": tune.loguniform(1e-6, 1e-4),
-    #     "batch_size": tune.choice([4]),
-    #     "max_seq_length": tune.choice([32]),
-    #     "hidden_dropout_prob": tune.choice([.1, .2]),
-    #     "hidden_act": tune.choice(["gelu"]),
-    #     "architecture": {
-    #         "tokenizer": BertTokenizer,
-    #         "model": BertForMultipleChoice,
-    #         "pretrained_model_name": "bert-large-uncased"
-    #     }
-    # }
 
     rt_config = {
         "lr": tune.loguniform(1e-6, 1e-4),
-        "batch_size": tune.choice([48]),
-        "max_seq_length": tune.choice([80]),
-        "hidden_dropout_prob": tune.choice([.1, .2]),
+        "batch_size": tune.choice([32]),
+        "max_seq_length": tune.choice([60, 48, 32]),
+        "hidden_dropout_prob": tune.choice([.1]),
         "hidden_act": tune.choice(["gelu"]),
         "architecture": {
             "tokenizer": BertTokenizer,
