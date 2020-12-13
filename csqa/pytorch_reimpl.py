@@ -170,7 +170,6 @@ def train_tune(config, logger, epochs=3, gpus=1):
     trainer = get_trainer(logger, epochs, gpus)
     model = Model(config)
     trainer.fit(model)
-    return trainer
 
 
 if __name__ == "__main__":
@@ -194,8 +193,8 @@ if __name__ == "__main__":
         ray.init(num_gpus=1)
 
     rt_config = {
-        # "lr": tune.loguniform(1e-4, 1e-1),
-        "batch_size": tune.choice([32])
+        "lr": tune.loguniform(1e-4, 1e-1),
+        # "batch_size": tune.choice([32])
     }
 
     ray_tune_callback = TuneReportCallback(
@@ -206,7 +205,7 @@ if __name__ == "__main__":
         on="validation_end")
 
     logger = TensorBoardLogger('tb_logs/', name='csqa')
-    tr = train_tune(config, logger, epochs=1, gpus=1)
+    # tr = train_tune(config, logger, epochs=1, gpus=1)
 
     analysis = tune.run(
         partial(

@@ -1,8 +1,7 @@
 # csqa
-csqa/data/
-csqa/lightning_logs/
-csqa/tb_logs/*
-csqa/runs/
+csqa/data/**
+csqa/lightning_logs/**
+
 .~*.odt*
 *.ckpt
 
