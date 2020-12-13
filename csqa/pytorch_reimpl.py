@@ -65,12 +65,16 @@ class Model(pl.LightningModule):
         training_data = dataset["train"][config["test_size"]:]
         test_data = dataset["train"][:config["test_size"]]
         self.x_train, self.y_train = preprocess(training_data, tokenizer, config["to_trim"])
+        # self.example_input_array = self.val_dataloader()
         self.x_test, self.y_test = preprocess(test_data, tokenizer, config["to_trim"])
         self.x_val, self.y_val = preprocess(dataset["validation"], tokenizer, config["to_trim"])
         self.pretrained_model = BertForMultipleChoice.from_pretrained(config["pretrained_model_name"], return_dict=True)
         self.accuracy = pl.metrics.Accuracy()
         self.model_config = model_config
-        self.batch_size = 32
+        self.batch_size = self.model_config.get("batch_size", 32)
+
+    def log_each_step(self, name, val, on_step=True, on_epoch=True):
+        self.log(name, val, prog_bar=True, on_step=on_step, on_epoch=on_epoch)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.model_config.get("lr", 2e-5))
@@ -96,14 +100,10 @@ class Model(pl.LightningModule):
         outputs = self.forward(**batch)
         loss = outputs.loss
         logits = outputs.logits
-        self.log(f'train_loss', loss, prog_bar=True, on_step=True)
-        # print(self.logger.root_dir)
-        # self.log_each_step(f'train_loss', loss)
+        # self.log(f'train_loss', loss, prog_bar=True, on_step=True)
+        self.log_each_step(f'train_loss', loss)
         acc = acc_from_logits_and_labels(logits, labels, self.accuracy)
-        self.logger.experiment.add_scalar("train_acc",
-                                          acc,
-                                          batch_idx)
-        self.log(f'train_acc', acc, prog_bar=True)
+        self.log_each_step(f'train_acc', acc)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -111,8 +111,8 @@ class Model(pl.LightningModule):
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
-        self.log(f"val_step_acc", acc, prog_bar=True)
-        self.log(f"val_step_loss", loss, prog_bar=True, on_step=True)
+        self.log_each_step(f"val_step_acc", acc)
+        self.log_each_step(f"val_step_loss", loss)
 
         return {
             "val_step_loss": loss,
@@ -120,12 +120,13 @@ class Model(pl.LightningModule):
         }
 
     def validation_epoch_end(self, outputs):
+        print("\n\nvalidation_epoch_end\n\n")
         avg_loss = torch.tensor(
             [x["val_step_loss"] for x in outputs]).mean()
         avg_acc = torch.tensor(
             [x["val_step_acc"] for x in outputs]).mean()
-        self.log("val_epoch_loss", avg_loss, prog_bar=True)
-        self.log("val_epoch_acc", avg_acc, prog_bar=True)
+        self.log_each_step("val_epoch_loss", avg_loss, on_step=False)
+        self.log_each_step("val_epoch_acc", avg_acc, on_step=False)
 
     def test_step(self, batch, batch_idx):
         labels = batch["labels"]
@@ -135,9 +136,6 @@ class Model(pl.LightningModule):
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
 
-        # self.logger.experiment.add_scalar("test_loss",
-        #                                   acc,
-        #                                   batch_idx)
         return {
             "loss": loss,
             "acc": acc
@@ -145,7 +143,7 @@ class Model(pl.LightningModule):
 
     def test_epoch_end(self, outputs):
         acc_li = [output["acc"] for output in outputs]
-        self.log("test acc", sum(acc_li) / len(acc_li), prog_bar=True)
+        self.log_each_step("test acc", sum(acc_li) / len(acc_li), on_step=False)
 
 
 def get_trainer(logger, epochs=3, gpus=1):
@@ -194,7 +192,7 @@ if __name__ == "__main__":
 
     rt_config = {
         "lr": tune.loguniform(1e-4, 1e-1),
-        # "batch_size": tune.choice([32])
+        "batch_size": tune.choice([32, 48])
     }
 
     ray_tune_callback = TuneReportCallback(
@@ -209,11 +207,10 @@ if __name__ == "__main__":
 
     analysis = tune.run(
         partial(
-            train_tune, logger=logger, epochs=1, gpus=config["use_gpu"],
+            train_tune, logger=logger, epochs=3, gpus=config["use_gpu"],
         ),
-        # the config parameter must be at this level
         config=rt_config,
-        num_samples=1,
+        num_samples=6,
         resources_per_trial={
             "cpu": 10,
             "gpu": config["use_gpu"]
@@ -222,7 +219,8 @@ if __name__ == "__main__":
         mode="max",
         log_to_file=True,
         local_dir="./ray_results",
-        name="csqa"
+        name="csqa",
+        fail_fast=True
     )
 
     print("Best config: ", analysis.best_config)
