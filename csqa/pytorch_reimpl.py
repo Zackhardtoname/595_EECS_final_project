@@ -14,53 +14,12 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from ray.tune.integration.pytorch_lightning import TuneReportCallback
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertForMultipleChoice
-from utils import *
-
-import os
-from functools import partial
-from glob import glob
-
-import hjson
-import pytorch_lightning as pl
-import ray
-import ray.tune as tune
-import torch
-from datasets import load_dataset
-from pytorch_lightning.callbacks import EarlyStopping
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import TensorBoardLogger
-from ray.tune.integration.pytorch_lightning import TuneReportCallback
-from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertForMultipleChoice
-from utils import *
 
 NUM_CHOICES = 5
-
 with open("config.hjson") as f:
     config = hjson.load(f)
 
-early_stop_callback = EarlyStopping(
-    monitor="val_epoch_loss",
-    min_delta=0.0,
-    patience=3,
-    verbose=True,
-    mode="min"
-)
-
-checkpoint_callback = ModelCheckpoint(
-    monitor='val_step_loss',
-    dirpath=config["ckpt_dir"],
-    filename='{epoch:02d}-{val_step_loss:.2f}',
-    save_top_k=1,
-    mode='min',
-)
-
-ray_tune_callback = TuneReportCallback(
-    {
-        "loss": "val_epoch_loss",
-        "acc": "val_epoch_acc"
-    },
-    on="validation_end")
+pl.seed_everything(config["seed"])
 
 
 def preprocess(data, tokenizer, trim=False):
@@ -112,9 +71,6 @@ class Model(pl.LightningModule):
         self.model_config = model_config
         self.batch_size = 32
 
-    def log_each_step(self, name, val):
-        self.log(name, val, prog_bar=True, on_step=True, on_epoch=True)
-
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.model_config.get("lr", 2e-5))
         return optimizer
@@ -139,12 +95,14 @@ class Model(pl.LightningModule):
         outputs = self.forward(**batch)
         loss = outputs.loss
         logits = outputs.logits
-        self.log(f'train_loss', loss, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f'train_loss', loss, prog_bar=True, on_step=True)
+        # print(self.logger.root_dir)
+        # self.log_each_step(f'train_loss', loss)
         acc = acc_from_logits_and_labels(logits, labels, self.accuracy)
-        self.log(f'train_acc', acc, prog_bar=True, on_step=True, on_epoch=True)
-        self.logger.experiment.add_scalar("train_loss",
+        self.logger.experiment.add_scalar("train_acc",
                                           acc,
                                           batch_idx)
+        self.log(f'train_acc', acc, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -152,8 +110,8 @@ class Model(pl.LightningModule):
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
-        self.log(f"val_step_acc", acc, prog_bar=True, on_step=True, on_epoch=True)
-        self.log(f"val_step_loss", loss, prog_bar=True, on_step=True, on_epoch=True)
+        self.log(f"val_step_acc", acc, prog_bar=True)
+        self.log(f"val_step_loss", loss, prog_bar=True)
 
         return {
             "val_step_loss": loss,
@@ -175,6 +133,10 @@ class Model(pl.LightningModule):
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
+
+        self.logger.experiment.add_scalar("test_loss",
+                                          acc,
+                                          batch_idx)
         return {
             "loss": loss,
             "acc": acc
@@ -188,7 +150,7 @@ class Model(pl.LightningModule):
 def get_trainer(logger, epochs=3, gpus=1):
     trainer = pl.Trainer(
         default_root_dir="./pl_logs",
-        logger=logger,
+        # logger=logger,
         log_every_n_steps=1,
         max_epochs=epochs,
         gpus=gpus,
@@ -207,13 +169,24 @@ def train_tune(config, logger, epochs=3, gpus=1):
     trainer = get_trainer(logger, epochs, gpus)
     model = Model(config)
     trainer.fit(model)
-NUM_CHOICES = 5
-with open("config.hjson") as f:
-    config = hjson.load(f)
 
-pl.seed_everything(config["seed"])
 
 if __name__ == "__main__":
+    early_stop_callback = EarlyStopping(
+        monitor="val_epoch_loss",
+        min_delta=0.0,
+        patience=3,
+        verbose=True,
+        mode="min"
+    )
+
+    checkpoint_callback = ModelCheckpoint(
+        monitor='val_step_loss',
+        dirpath=config["ckpt_dir"],
+        filename='{epoch:02d}-{val_step_loss:.2f}',
+        save_top_k=1,
+        mode='min',
+    )
 
     if config["use_gpu"]:
         ray.init(num_gpus=1)
@@ -223,10 +196,17 @@ if __name__ == "__main__":
         "batch_size": tune.choice([32])
     }
 
-    logger = TensorBoardLogger('tb_logs/', name='csqa', log_graph=True)
+    ray_tune_callback = TuneReportCallback(
+        {
+            "loss": "val_epoch_loss",
+            "acc": "val_epoch_acc"
+        },
+        on="validation_end")
+
+    logger = TensorBoardLogger('tb_logs/', name='csqa')
     analysis = tune.run(
         partial(
-            train_tune, logger=logger, epochs=3, gpus=config["use_gpu"],
+            train_tune, logger=logger, epochs=1, gpus=config["use_gpu"],
         ),
         # the config parameter must be at this level
         config=rt_config,
@@ -237,6 +217,9 @@ if __name__ == "__main__":
         },
         metric="acc",
         mode="max",
+        log_to_file=True,
+        local_dir="./ray_results",
+        name="test_experiment"
     )
 
     print("Best config: ", analysis.best_config)

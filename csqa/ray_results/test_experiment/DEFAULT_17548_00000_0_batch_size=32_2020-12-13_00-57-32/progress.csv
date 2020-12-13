@@ -1,0 +1,2 @@
+loss,acc,time_this_iter_s,done,timesteps_total,episodes_total,training_iteration,experiment_id,date,timestamp,time_total_s,pid,hostname,node_ip,time_since_restore,timesteps_since_restore,iterations_since_restore,trial_id,experiment_tag
+1.1058224439620972,0.557852566242218,114.05516982078552,False,,,1,32ac3320cc9a42f7bcdcfdf62b9beeb3,2020-12-13_00-59-28,1607839168,114.05516982078552,1192099,archdesktop,192.168.0.191,114.05516982078552,0,1,17548_00000,0_batch_size=32
