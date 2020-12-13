@@ -29,7 +29,7 @@ def preprocess(data, tokenizer, max_length=config["max_seq_length"], trim=False)
     rep_q = [item for item in q for _ in range(5)]
     c = data["choices"]
     expanded_c = [e for ele in c for e in ele["text"]]
-    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
+    x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding='max_length', truncation=True,
                   max_length=max_length).data
     end = 200 if trim else len(x["input_ids"])
     x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
@@ -110,7 +110,6 @@ class Model(pl.LightningModule):
         outputs = self.forward(**batch)
         loss = outputs.loss
         logits = outputs.logits
-        # self.log(f'train_loss', loss, prog_bar=True, on_step=True)
         self.log_each_step(f'train_loss', loss)
         acc = acc_from_logits_and_labels(logits, labels, self.accuracy)
         self.log_each_step(f'train_acc', acc)
@@ -199,21 +198,29 @@ if __name__ == "__main__":
 
     if config["use_gpu"]:
         ray.init(num_gpus=1)
+    # rt_config = {
+    #     "lr": tune.loguniform(1e-6, 1e-4),
+    #     "batch_size": tune.choice([4]),
+    #     "max_seq_length": tune.choice([32]),
+    #     "hidden_dropout_prob": tune.choice([.1, .2]),
+    #     "hidden_act": tune.choice(["gelu"]),
+    #     "architecture": {
+    #         "tokenizer": BertTokenizer,
+    #         "model": BertForMultipleChoice,
+    #         "pretrained_model_name": "bert-large-uncased"
+    #     }
+    # }
 
     rt_config = {
-        # "lr": tune.choice([2e-5]),
-        # "batch_size": tune.choice([32]),
-        # "max_seq_length": tune.choice([32])
-
-        "lr": tune.loguniform(1e-6, 1e-1),
-        # "batch_size": tune.choice([48, 32]),
-        "max_seq_length": tune.choice([48, 32, 16]),
-        "hidden_dropout_prob": tune.choice([.1, .3, .5]),
-        "hidden_act": tune.choice(["relu", "gelu"]),
+        "lr": tune.loguniform(1e-6, 1e-4),
+        "batch_size": tune.choice([48]),
+        "max_seq_length": tune.choice([80]),
+        "hidden_dropout_prob": tune.choice([.1, .2]),
+        "hidden_act": tune.choice(["gelu"]),
         "architecture": {
-            "tokenizer": AlbertTokenizer,
-            "model": AlbertForMultipleChoice,
-            "pretrained_model_name": "albert-base-v2"
+            "tokenizer": BertTokenizer,
+            "model": BertForMultipleChoice,
+            "pretrained_model_name": "bert-base-uncased"
         }
     }
 
