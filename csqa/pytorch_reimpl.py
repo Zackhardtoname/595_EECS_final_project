@@ -1,5 +1,6 @@
 import os
 from functools import partial
+from glob import glob
 
 import hjson
 import pytorch_lightning as pl
@@ -227,9 +228,9 @@ if __name__ == "__main__":
 
     print("Best config: ", analysis.best_config)
 
-    model = Model(config)
-    ckpt_path = os.path.join(checkpoint_callback.dirpath, os.listdir(checkpoint_callback.dirpath)[0])
-    if ckpt_path:
-        model = Model.load_from_checkpoint(ckpt_path, model_config=config)
-        trainer = get_trainer(logger=logger, epochs=3, gpus=config["use_gpu"])
-        test_res = trainer.test(model)
+    # testing with the latest ckpt file
+    glob_pattern = os.path.join(checkpoint_callback.dirpath, '*')
+    ckpt_files = sorted(glob(glob_pattern), key=os.path.getctime)
+    model = Model.load_from_checkpoint(ckpt_files[-1], model_config=config)
+    trainer = get_trainer(logger=logger, epochs=3, gpus=config["use_gpu"])
+    test_res = trainer.test(model)
