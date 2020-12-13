@@ -29,6 +29,11 @@ print(accuracy(a, b))
 # model = Model()
 
 # x_test, y_test = preprocess(dataset["test"])
+# trainer.test(test_dataloaders=DataLoader(DictDataset(x_test, y_test), batch_size=config["test_batch_size"]))
+# analysis.get_best_trial().last_result["acc"]
+# analysis.get_best_trial().config["batch_size"]
+# print(f"test_acc", acc)
+# print(f"test_loss", loss)
 
 # trainer.fit(
 #     model,
@@ -40,3 +45,11 @@ print(accuracy(a, b))
 # labels.to(pred.device)
 # # acc = CrossEntropyLoss(logits, labels)
 # acc = labels.eq(pred).sum() / labels.shape[0]
+
+# with open(ckpt_path) as f:
+#     model_state, optimizer_state = torch.load(f)
+#
+# model.load_state_dict(model_state)
+# optimizer.load_state_dict(optimizer_state)
+# ouputs = model(model.x_test)
+# print(test_res)

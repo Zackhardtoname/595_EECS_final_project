@@ -8,6 +8,7 @@ import ray.tune as tune
 import torch
 from datasets import load_dataset
 from pytorch_lightning.callbacks import EarlyStopping
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from ray.tune.integration.pytorch_lightning import TuneReportCallback
 from torch.utils.data import Dataset, DataLoader
@@ -95,6 +96,13 @@ class Model(pl.LightningModule):
         acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
         self.log(f"val_step_acc", acc)
         self.log(f"val_step_loss", loss)
+
+        # # ray tune checkpoints
+        # with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+        #     path = os.path.join(checkpoint_dir, "checkpoint")
+        #     torch.save(
+        #         (net.state_dict(), optimizer.state_dict()), path)
+
         return {
             "val_step_loss": loss,
             "val_step_acc": acc,
@@ -109,7 +117,7 @@ class Model(pl.LightningModule):
         self.log("val_epoch_loss", avg_loss)
         self.log("val_epoch_acc", avg_acc)
 
-    def testing_step(self, batch, batch_idx):
+    def test_step(self, batch, batch_idx):
         labels = batch["labels"]
         batch.pop("labels", None)
 
@@ -126,7 +134,7 @@ class Model(pl.LightningModule):
             "acc": acc
         }
 
-    def testing_epoch_end(self, outputs):
+    def test_epoch_end(self, outputs):
         acc_li = [output["acc"] for output in outputs]
         self.log("test acc", sum(acc_li) / len(acc_li))
 
@@ -142,7 +150,31 @@ class Model(pl.LightningModule):
         return DataLoader(DictDataset(self.x_val, self.y_val), batch_size=self.batch_size, num_workers=8)
 
     def test_dataloader(self):
-        return self.val_dataloader()
+        return DataLoader(DictDataset(self.x_test, self.y_test), batch_size=self.batch_size, num_workers=8)
+
+
+def get_trainer(logger, epochs=3, gpus=1):
+    trainer = pl.Trainer(
+        default_root_dir="./pl_logs",
+        logger=logger,
+        log_every_n_steps=10,
+        max_epochs=epochs,
+        gpus=gpus,
+        # auto_scale_batch_size="power",
+        # progress_bar_refresh_rate=20,
+        callbacks=[
+            ray_tune_callback,
+            early_stop_callback,
+            checkpoint_callback,
+        ])
+
+    return trainer
+
+
+def train_tune(config, logger, epochs=3, gpus=1):
+    trainer = get_trainer(logger, epochs, gpus)
+    model = Model(config)
+    trainer.fit(model)
 
 
 if __name__ == "__main__":
@@ -154,6 +186,14 @@ if __name__ == "__main__":
         mode="min"
     )
 
+    checkpoint_callback = ModelCheckpoint(
+        monitor='val_step_loss',
+        dirpath=config["ckpt_dir"],
+        filename='{epoch:02d}-{val_step_loss:.2f}',
+        save_top_k=1,
+        mode='min',
+    )
+
     if config["use_gpu"]:
         ray.init(num_gpus=1)
 
@@ -162,28 +202,14 @@ if __name__ == "__main__":
         "batch_size": tune.choice([32])
     }
 
-    callback = TuneReportCallback(
+    ray_tune_callback = TuneReportCallback(
         {
             "loss": "val_epoch_loss",
             "acc": "val_epoch_acc"
         },
         on="validation_end")
 
-
-    def train_tune(config, logger, epochs=3, gpus=1):
-        trainer = pl.Trainer(
-            logger=logger,
-            log_every_n_steps=10,
-            max_epochs=epochs,
-            gpus=gpus,
-            # auto_scale_batch_size="power",
-            # progress_bar_refresh_rate=20,
-            callbacks=[callback])
-        model = Model(config)
-        trainer.fit(model)
-
-
-    logger = TensorBoardLogger('logs/', name='csqa')
+    logger = TensorBoardLogger('tb_logs/', name='csqa')
     analysis = tune.run(
         partial(
             train_tune, logger=logger, epochs=3, gpus=config["use_gpu"],
@@ -200,23 +226,10 @@ if __name__ == "__main__":
     )
 
     print("Best config: ", analysis.best_config)
-    # trainer.test(test_dataloaders=DataLoader(DictDataset(x_test, y_test), batch_size=config["test_batch_size"]))
-    # analysis.get_best_trial().last_result["acc"]
-    # analysis.get_best_trial().config["batch_size"]
 
     model = Model(config)
-    checkpoint_dir = ""
-    if checkpoint_dir:
-        with open(os.path.join(checkpoint_dir, "checkpoint")) as f:
-            model_state, optimizer_state = torch.load(f)
-
-        model.load_state_dict(model_state)
-        ouputs = model(model.x_test)
-        # optimizer.load_state_dict(optimizer_state)
-
-    test_outputs = model(**model.x_test)
-    loss = test_outputs.loss
-    reshaped_logits = test_outputs.logits.view(-1, NUM_CHOICES)
-    acc = acc_from_logits_and_labels(reshaped_logits, model.y_test, model.accuracy)
-    print(f"test_acc", acc)
-    print(f"test_loss", loss)
+    ckpt_path = os.path.join(checkpoint_callback.dirpath, os.listdir(checkpoint_callback.dirpath)[0])
+    if ckpt_path:
+        model = Model.load_from_checkpoint(ckpt_path, model_config=config)
+        trainer = get_trainer(logger=logger, epochs=3, gpus=config["use_gpu"])
+        test_res = trainer.test(model)
