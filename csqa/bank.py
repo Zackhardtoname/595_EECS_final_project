@@ -53,3 +53,38 @@ print(accuracy(a, b))
 # optimizer.load_state_dict(optimizer_state)
 # ouputs = model(model.x_test)
 # print(test_res)
+
+# # ray tune checkpoints
+# with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+#     path = os.path.join(checkpoint_dir, "checkpoint")
+#     torch.save(
+#         (net.state_dict(), optimizer.state_dict()), path)
+
+# self.logger.experiment.add_scalar("train_loss",
+#                                   loss,
+#                                   self.global_step)
+
+
+# def training_epoch_end(self, outputs):
+#     # calculating average loss
+#     avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
+#
+#     # logging using tensorboard logger
+#     self.logger.experiment.add_scalar("Loss/Train",
+#                                       avg_loss,
+#                                       self.current_epoch)
+#
+#     epoch_dictionary = {
+#         # required
+#         'loss': avg_loss}
+#
+#     return epoch_dictionary
+to_return = {
+    # required for pl
+    "loss": loss,
+    # for logging
+    "log": tb_logs,
+}
+self.logger.experiment.add_scalar("test_loss",
+                                  acc,
+                                  batch_idx)

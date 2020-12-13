@@ -16,24 +16,6 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertForMultipleChoice
 from utils import *
 
-import os
-from functools import partial
-from glob import glob
-
-import hjson
-import pytorch_lightning as pl
-import ray
-import ray.tune as tune
-import torch
-from datasets import load_dataset
-from pytorch_lightning.callbacks import EarlyStopping
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import TensorBoardLogger
-from ray.tune.integration.pytorch_lightning import TuneReportCallback
-from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertForMultipleChoice
-from utils import *
-
 NUM_CHOICES = 5
 
 with open("config.hjson") as f:
@@ -207,43 +189,3 @@ def train_tune(config, logger, epochs=3, gpus=1):
     trainer = get_trainer(logger, epochs, gpus)
     model = Model(config)
     trainer.fit(model)
-NUM_CHOICES = 5
-with open("config.hjson") as f:
-    config = hjson.load(f)
-
-pl.seed_everything(config["seed"])
-
-if __name__ == "__main__":
-
-    if config["use_gpu"]:
-        ray.init(num_gpus=1)
-
-    rt_config = {
-        # "lr": tune.loguniform(1e-4, 1e-1),
-        "batch_size": tune.choice([32])
-    }
-
-    logger = TensorBoardLogger('tb_logs/', name='csqa', log_graph=True)
-    analysis = tune.run(
-        partial(
-            train_tune, logger=logger, epochs=3, gpus=config["use_gpu"],
-        ),
-        # the config parameter must be at this level
-        config=rt_config,
-        num_samples=1,
-        resources_per_trial={
-            "cpu": 10,
-            "gpu": config["use_gpu"]
-        },
-        metric="acc",
-        mode="max",
-    )
-
-    print("Best config: ", analysis.best_config)
-
-    # testing with the latest ckpt file
-    glob_pattern = os.path.join(checkpoint_callback.dirpath, '*')
-    ckpt_files = sorted(glob(glob_pattern), key=os.path.getctime)
-    model = Model.load_from_checkpoint(ckpt_files[-1], model_config=config)
-    trainer = get_trainer(logger=logger, epochs=3, gpus=config["use_gpu"])
-    test_res = trainer.test(model)

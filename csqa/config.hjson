@@ -2,7 +2,7 @@
     # lowercase bool names for hjson
 
     # debugging
-    "to_trim": false
+    "to_trim": true
     "pretrained_model_name": "bert-base-uncased"  # "bert-large-uncased"
     "do_train": true
     "do_eval": true
