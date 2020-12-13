@@ -80,7 +80,7 @@ print(accuracy(a, b))
 #
 #     return epoch_dictionary
 to_return = {
-    # required for pl
+    # REQUIRED: It ie required for us to return "loss" for pl
     "loss": loss,
     # for logging
     "log": tb_logs,

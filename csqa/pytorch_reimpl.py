@@ -20,6 +20,7 @@ with open("config.hjson") as f:
     config = hjson.load(f)
 
 pl.seed_everything(config["seed"])
+train_step = 0
 
 
 def preprocess(data, tokenizer, trim=False):
@@ -111,7 +112,7 @@ class Model(pl.LightningModule):
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, batch["labels"], self.accuracy)
         self.log(f"val_step_acc", acc, prog_bar=True)
-        self.log(f"val_step_loss", loss, prog_bar=True)
+        self.log(f"val_step_loss", loss, prog_bar=True, on_step=True)
 
         return {
             "val_step_loss": loss,
@@ -134,9 +135,9 @@ class Model(pl.LightningModule):
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
         acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
 
-        self.logger.experiment.add_scalar("test_loss",
-                                          acc,
-                                          batch_idx)
+        # self.logger.experiment.add_scalar("test_loss",
+        #                                   acc,
+        #                                   batch_idx)
         return {
             "loss": loss,
             "acc": acc
@@ -150,7 +151,7 @@ class Model(pl.LightningModule):
 def get_trainer(logger, epochs=3, gpus=1):
     trainer = pl.Trainer(
         default_root_dir="./pl_logs",
-        # logger=logger,
+        logger=logger,
         log_every_n_steps=1,
         max_epochs=epochs,
         gpus=gpus,
@@ -169,6 +170,7 @@ def train_tune(config, logger, epochs=3, gpus=1):
     trainer = get_trainer(logger, epochs, gpus)
     model = Model(config)
     trainer.fit(model)
+    return trainer
 
 
 if __name__ == "__main__":
@@ -204,6 +206,8 @@ if __name__ == "__main__":
         on="validation_end")
 
     logger = TensorBoardLogger('tb_logs/', name='csqa')
+    tr = train_tune(config, logger, epochs=1, gpus=1)
+
     analysis = tune.run(
         partial(
             train_tune, logger=logger, epochs=1, gpus=config["use_gpu"],
@@ -219,7 +223,7 @@ if __name__ == "__main__":
         mode="max",
         log_to_file=True,
         local_dir="./ray_results",
-        name="test_experiment"
+        name="csqa"
     )
 
     print("Best config: ", analysis.best_config)
