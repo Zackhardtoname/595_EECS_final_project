@@ -3,7 +3,7 @@ csqa/data/**
 csqa/lightning_logs/**
 csqa/tb_logs/**
 csqa/runs/**
-csqa/ray_results/**
+csqa/ray_results*/**
 csqa/pl_logs/**
 .~*.odt*
 *.ckpt

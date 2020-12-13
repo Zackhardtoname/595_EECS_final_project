@@ -13,7 +13,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from ray.tune.integration.pytorch_lightning import TuneReportCallback
 from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertForMultipleChoice
+from transformers import BertTokenizer, BertForMultipleChoice, PretrainedConfig, AlbertTokenizer, \
+    AlbertForMultipleChoice
 
 NUM_CHOICES = 5
 with open("config.hjson") as f:
@@ -23,15 +24,15 @@ pl.seed_everything(config["seed"])
 train_step = 0
 
 
-def preprocess(data, tokenizer, trim=False):
+def preprocess(data, tokenizer, max_length=config["max_seq_length"], trim=False):
     q = data["question"]
     rep_q = [item for item in q for _ in range(5)]
     c = data["choices"]
     expanded_c = [e for ele in c for e in ele["text"]]
     x = tokenizer(rep_q, expanded_c, return_tensors='pt', padding=True, truncation=True,
-                  max_length=config["max_seq_length"]).data
+                  max_length=max_length).data
     end = 200 if trim else len(x["input_ids"])
-    x = {k: v.view(-1, NUM_CHOICES, config["max_seq_length"])[:end] for k, v in x.items()}
+    x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
     y = data["answerKey"][:end]
     y = torch.tensor([ord(item) - ord("A") for item in y])
 
@@ -60,24 +61,33 @@ def acc_from_logits_and_labels(logits, labels, accuracy_fn):
 class Model(pl.LightningModule):
     def __init__(self, model_config):
         super().__init__()
+        self.model_config = model_config
         dataset = load_dataset("commonsense_qa")
-        tokenizer = BertTokenizer.from_pretrained(config["pretrained_model_name"])
+        tokenizer = self.model_config["architecture"]["tokenizer"].from_pretrained(
+            self.model_config["architecture"]["pretrained_model_name"])
         training_data = dataset["train"][config["test_size"]:]
         test_data = dataset["train"][:config["test_size"]]
-        self.x_train, self.y_train = preprocess(training_data, tokenizer, config["to_trim"])
+        self.x_train, self.y_train = preprocess(training_data, tokenizer, self.model_config["max_seq_length"],
+                                                config["to_trim"])
         # self.example_input_array = self.val_dataloader()
-        self.x_test, self.y_test = preprocess(test_data, tokenizer, config["to_trim"])
-        self.x_val, self.y_val = preprocess(dataset["validation"], tokenizer, config["to_trim"])
-        self.pretrained_model = BertForMultipleChoice.from_pretrained(config["pretrained_model_name"], return_dict=True)
+        self.x_test, self.y_test = preprocess(test_data, tokenizer, self.model_config["max_seq_length"],
+                                              config["to_trim"])
+        self.x_val, self.y_val = preprocess(dataset["validation"], tokenizer, self.model_config["max_seq_length"],
+                                            config["to_trim"])
+        self.pretrained_model = self.model_config["architecture"]["model"].from_pretrained(
+            self.model_config["architecture"]["pretrained_model_name"],
+            hidden_act=self.model_config[
+                "hidden_act"],
+            hidden_dropout_prob=self.model_config[
+                "hidden_dropout_prob"], return_dict=True)
         self.accuracy = pl.metrics.Accuracy()
-        self.model_config = model_config
         self.batch_size = self.model_config.get("batch_size", 32)
 
     def log_each_step(self, name, val, on_step=True, on_epoch=True):
         self.log(name, val, prog_bar=True, on_step=on_step, on_epoch=on_epoch)
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.model_config.get("lr", 2e-5))
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.model_config.get("lr", 2e-5))
         return optimizer
 
     def train_dataloader(self):
@@ -191,8 +201,20 @@ if __name__ == "__main__":
         ray.init(num_gpus=1)
 
     rt_config = {
-        "lr": tune.loguniform(1e-4, 1e-1),
-        "batch_size": tune.choice([32, 48])
+        # "lr": tune.choice([2e-5]),
+        # "batch_size": tune.choice([32]),
+        # "max_seq_length": tune.choice([32])
+
+        "lr": tune.loguniform(1e-6, 1e-1),
+        # "batch_size": tune.choice([48, 32]),
+        "max_seq_length": tune.choice([48, 32, 16]),
+        "hidden_dropout_prob": tune.choice([.1, .3, .5]),
+        "hidden_act": tune.choice(["relu", "gelu"]),
+        "architecture": {
+            "tokenizer": AlbertTokenizer,
+            "model": AlbertForMultipleChoice,
+            "pretrained_model_name": "albert-base-v2"
+        }
     }
 
     ray_tune_callback = TuneReportCallback(
@@ -212,8 +234,8 @@ if __name__ == "__main__":
         config=rt_config,
         num_samples=6,
         resources_per_trial={
-            "cpu": 10,
-            "gpu": config["use_gpu"]
+            "cpu": 2,
+            "gpu": config["use_gpu"],
         },
         metric="acc",
         mode="max",
@@ -228,6 +250,6 @@ if __name__ == "__main__":
     # testing with the latest ckpt file
     glob_pattern = os.path.join(checkpoint_callback.dirpath, '*')
     ckpt_files = sorted(glob(glob_pattern), key=os.path.getctime)
-    model = Model.load_from_checkpoint(ckpt_files[-1], model_config=config)
+    model = Model.load_from_checkpoint(ckpt_files[-1], model_config=analysis.best_config)
     trainer = get_trainer(logger=logger, epochs=3, gpus=config["use_gpu"])
     test_res = trainer.test(model)
