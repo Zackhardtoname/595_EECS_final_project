@@ -29,6 +29,8 @@ google-auth-oauthlib==0.4.2
 google-pasta==0.2.0
 googleapis-common-protos==1.52.0
 gpustat==0.6.0
+graphviz==0.15
+greenlet==0.4.17
 grpcio==1.33.2
 h5py==2.10.0
 hiredis==1.1.0
@@ -42,6 +44,7 @@ Markdown==3.3.3
 msgpack==1.0.0
 multidict==5.0.2
 multiprocess==0.70.11.1
+neovim==0.3.1
 numpy==1.18.5
 nvidia-ml-py3==7.352.0
 oauthlib==3.1.0
@@ -57,6 +60,7 @@ py-spy==0.3.3
 pyarrow==2.0.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
+pynvim==0.4.2
 pyparsing==2.4.7
 pyrsistent==0.17.3
 PySocks==1.7.1
@@ -86,6 +90,7 @@ termcolor==1.1.0
 threadpoolctl==2.1.0
 tokenizers==0.9.3
 torch==1.7.0
+torchviz==0.0.1
 tqdm==4.49.0
 transformers==3.5.1
 typing-extensions==3.7.4.3
