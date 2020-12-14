@@ -1,0 +1,30 @@
+[ERROR 2020-12-13 06:40:24,279] function_runner.py: 254  Runner Thread raised error.
+Traceback (most recent call last):
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 315, in entrypoint
+    return self._trainable_func(self.config, self._status_reporter,
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 176, in train_tune
+    model = Model(config)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 76, in __init__
+    hidden_act=self.model_config[
+KeyError: 'hidden_dropout_prob'
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 267, in run
+    raise e
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 315, in entrypoint
+    return self._trainable_func(self.config, self._status_reporter,
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 176, in train_tune
+    model = Model(config)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 76, in __init__
+    hidden_act=self.model_config[
+KeyError: 'hidden_dropout_prob'

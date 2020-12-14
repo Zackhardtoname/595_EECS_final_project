@@ -1,0 +1,10 @@
+Failure # 1 (occurred at 2020-12-13_22-26-20)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/trial_runner.py", line 726, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/ray_trial_executor.py", line 489, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/usr/local/lib/python3.6/dist-packages/ray/worker.py", line 1454, in get
+    raise value
+ray.exceptions.RayActorError: The actor died unexpectedly before finishing this task.
+

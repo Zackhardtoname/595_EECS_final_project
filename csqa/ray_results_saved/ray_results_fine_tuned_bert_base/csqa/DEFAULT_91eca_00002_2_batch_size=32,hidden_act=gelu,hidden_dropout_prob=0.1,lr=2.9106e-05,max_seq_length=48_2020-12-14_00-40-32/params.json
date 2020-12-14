@@ -1,0 +1,12 @@
+{
+  "architecture": {
+    "model": "<class 'transformers.modeling_bert.BertForMultipleChoice'>",
+    "pretrained_model_name": "bert-base-uncased",
+    "tokenizer": "<class 'transformers.tokenization_bert.BertTokenizer'>"
+  },
+  "batch_size": 32,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "lr": 2.910635913133073e-05,
+  "max_seq_length": 48
+}

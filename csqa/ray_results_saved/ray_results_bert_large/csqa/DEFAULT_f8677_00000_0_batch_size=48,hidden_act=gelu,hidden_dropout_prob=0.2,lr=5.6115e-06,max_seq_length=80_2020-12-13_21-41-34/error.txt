@@ -1,0 +1,45 @@
+Failure # 1 (occurred at 2020-12-13_21-41-39)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/trial_runner.py", line 726, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/ray_trial_executor.py", line 489, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/usr/local/lib/python3.6/dist-packages/ray/worker.py", line 1452, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(TuneError): [36mray::ImplicitFunc.train()[39m (pid=621, ip=172.28.0.2)
+  File "python/ray/_raylet.pyx", line 482, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 436, in ray._raylet.execute_task.function_executor
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/trainable.py", line 336, in train
+    result = self.step()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 366, in step
+    self._report_thread_runner_error(block=True)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 513, in _report_thread_runner_error
+    .format(err_tb_str)))
+ray.tune.error.TuneError: Trial raised an exception. Traceback:
+[36mray::ImplicitFunc.train()[39m (pid=621, ip=172.28.0.2)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 178, in train_tune
+    model = Model(config)
+  File "pytorch_reimpl.py", line 71, in __init__
+    config["to_trim"])
+  File "pytorch_reimpl.py", line 33, in preprocess
+    max_length=max_length).data
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2214, in __call__
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2379, in batch_encode_plus
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2032, in _get_padding_truncation_strategies
+    padding_strategy = PaddingStrategy(padding)
+  File "/usr/lib/python3.6/enum.py", line 293, in __call__
+    return cls.__new__(cls, value)
+  File "/usr/lib/python3.6/enum.py", line 535, in __new__
+    return cls._missing_(value)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 116, in _missing_
+    % (value, cls.__name__, str(list(cls._value2member_map_.keys())))
+ValueError: 80 is not a valid PaddingStrategy, please select one of ['longest', 'max_length', 'do_not_pad']
+

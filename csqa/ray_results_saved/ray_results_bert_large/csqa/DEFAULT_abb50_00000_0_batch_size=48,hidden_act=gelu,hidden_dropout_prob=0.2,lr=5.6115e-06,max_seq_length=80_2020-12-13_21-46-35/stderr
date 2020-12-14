@@ -1,0 +1,169 @@
+/usr/local/lib/python3.6/dist-packages/pytorch_lightning/utilities/distributed.py:45: UserWarning: You have set progress_bar_refresh_rate < 20 on Google Colab. This may crash. Consider using progress_bar_refresh_rate >= 20 in Trainer.
+  warnings.warn(*args, **kwargs)
+Downloading:   0%|          | 0.00/1.59k [00:00<?, ?B/s]Downloading: 4.37kB [00:00, 3.88MB/s]                   
+Downloading:   0%|          | 0.00/1.05k [00:00<?, ?B/s]Downloading: 2.31kB [00:00, 2.27MB/s]                   
+Downloading:   0%|          | 0.00/3.79M [00:00<?, ?B/s]Downloading: 100%|##########| 3.79M/3.79M [00:00<00:00, 53.0MB/s]
+Downloading:   0%|          | 0.00/423k [00:00<?, ?B/s]Downloading: 100%|##########| 423k/423k [00:00<00:00, 29.7MB/s]
+Downloading:   0%|          | 0.00/472k [00:00<?, ?B/s]Downloading: 100%|##########| 472k/472k [00:00<00:00, 26.4MB/s]
+0 examples [00:00, ? examples/s]1848 examples [00:00, 18471.91 examples/s]3730 examples [00:00, 18572.82 examples/s]5675 examples [00:00, 18825.25 examples/s]7559 examples [00:00, 18828.80 examples/s]9398 examples [00:00, 18694.58 examples/s]                                          0 examples [00:00, ? examples/s]                                0 examples [00:00, ? examples/s]703 examples [00:00, 5148.09 examples/s]                                        Downloading:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading: 100%|##########| 232k/232k [00:00<00:00, 20.3MB/s]
+Downloading:   0%|          | 0.00/434 [00:00<?, ?B/s]Downloading: 100%|##########| 434/434 [00:00<00:00, 416kB/s]
+Downloading:   0%|          | 0.00/1.34G [00:00<?, ?B/s]Downloading:   1%|          | 6.73M/1.34G [00:00<00:19, 67.3MB/s]Downloading:   1%|1         | 14.1M/1.34G [00:00<00:19, 69.2MB/s]Downloading:   2%|1         | 22.3M/1.34G [00:00<00:18, 72.4MB/s]Downloading:   2%|2         | 30.2M/1.34G [00:00<00:17, 74.4MB/s]Downloading:   3%|2         | 38.0M/1.34G [00:00<00:17, 75.4MB/s]Downloading:   3%|3         | 46.3M/1.34G [00:00<00:16, 77.4MB/s]Downloading:   4%|3         | 53.2M/1.34G [00:00<00:19, 66.9MB/s]Downloading:   4%|4         | 59.7M/1.34G [00:00<00:25, 51.0MB/s]Downloading:   5%|4         | 67.1M/1.34G [00:01<00:23, 53.5MB/s]Downloading:   5%|5         | 72.7M/1.34G [00:01<00:24, 52.5MB/s]Downloading:   6%|5         | 78.2M/1.34G [00:01<00:32, 39.4MB/s]Downloading:   6%|6         | 83.9M/1.34G [00:01<00:34, 36.6MB/s]Downloading:   7%|6         | 89.7M/1.34G [00:01<00:30, 41.2MB/s]Downloading:   7%|7         | 97.3M/1.34G [00:01<00:26, 47.8MB/s]Downloading:   8%|7         | 105M/1.34G [00:01<00:23, 53.4MB/s] Downloading:   8%|8         | 111M/1.34G [00:01<00:23, 51.6MB/s]Downloading:   9%|8         | 117M/1.34G [00:02<00:24, 51.0MB/s]Downloading:   9%|9         | 125M/1.34G [00:02<00:21, 56.6MB/s]Downloading:  10%|9         | 132M/1.34G [00:02<00:20, 58.9MB/s]Downloading:  10%|#         | 139M/1.34G [00:02<00:18, 63.6MB/s]Downloading:  11%|#         | 146M/1.34G [00:02<00:18, 65.6MB/s]Downloading:  11%|#1        | 153M/1.34G [00:02<00:21, 55.7MB/s]Downloading:  12%|#1        | 159M/1.34G [00:02<00:21, 55.8MB/s]Downloading:  12%|#2        | 166M/1.34G [00:02<00:20, 58.5MB/s]Downloading:  13%|#2        | 174M/1.34G [00:03<00:18, 62.8MB/s]Downloading:  14%|#3        | 182M/1.34G [00:03<00:17, 67.8MB/s]Downloading:  14%|#4        | 190M/1.34G [00:03<00:16, 70.9MB/s]Downloading:  15%|#4        | 197M/1.34G [00:03<00:18, 62.8MB/s]Downloading:  15%|#5        | 204M/1.34G [00:03<00:24, 46.8MB/s]Downloading:  16%|#5        | 210M/1.34G [00:03<00:23, 47.4MB/s]Downloading:  16%|#6        | 218M/1.34G [00:03<00:20, 54.1MB/s]Downloading:  17%|#6        | 226M/1.34G [00:03<00:18, 59.7MB/s]Downloading:  17%|#7        | 232M/1.34G [00:04<00:20, 53.4MB/s]Downloading:  18%|#7        | 238M/1.34G [00:04<00:20, 53.5MB/s]Downloading:  18%|#8        | 244M/1.34G [00:04<00:23, 47.8MB/s]Downloading:  19%|#8        | 252M/1.34G [00:04<00:22, 48.8MB/s]Downloading:  19%|#9        | 259M/1.34G [00:04<00:19, 54.4MB/s]Downloading:  20%|#9        | 266M/1.34G [00:04<00:18, 57.7MB/s]Downloading:  20%|##        | 272M/1.34G [00:04<00:22, 47.3MB/s]Downloading:  21%|##        | 277M/1.34G [00:05<00:27, 38.3MB/s]Downloading:  21%|##        | 282M/1.34G [00:05<00:26, 40.7MB/s]Downloading:  21%|##1       | 287M/1.34G [00:05<00:31, 34.1MB/s]Downloading:  22%|##1       | 294M/1.34G [00:05<00:25, 40.8MB/s]Downloading:  22%|##2       | 302M/1.34G [00:05<00:22, 46.9MB/s]Downloading:  23%|##3       | 311M/1.34G [00:05<00:19, 54.3MB/s]Downloading:  24%|##3       | 319M/1.34G [00:05<00:19, 53.5MB/s]Downloading:  24%|##4       | 325M/1.34G [00:05<00:19, 52.3MB/s]Downloading:  25%|##4       | 331M/1.34G [00:06<00:24, 42.0MB/s]Downloading:  25%|##5       | 338M/1.34G [00:06<00:21, 47.8MB/s]Downloading:  26%|##5       | 344M/1.34G [00:06<00:19, 51.8MB/s]Downloading:  26%|##6       | 350M/1.34G [00:06<00:24, 41.3MB/s]Downloading:  26%|##6       | 356M/1.34G [00:06<00:22, 44.9MB/s]Downloading:  27%|##6       | 363M/1.34G [00:06<00:19, 50.3MB/s]Downloading:  27%|##7       | 369M/1.34G [00:06<00:21, 45.6MB/s]Downloading:  28%|##8       | 377M/1.34G [00:07<00:18, 52.3MB/s]Downloading:  28%|##8       | 383M/1.34G [00:07<00:18, 50.7MB/s]Downloading:  29%|##8       | 389M/1.34G [00:07<00:18, 50.4MB/s]Downloading:  29%|##9       | 394M/1.34G [00:07<00:18, 51.6MB/s]Downloading:  30%|##9       | 401M/1.34G [00:07<00:16, 56.2MB/s]Downloading:  30%|###       | 407M/1.34G [00:07<00:18, 52.0MB/s]Downloading:  31%|###       | 413M/1.34G [00:07<00:19, 48.8MB/s]Downloading:  31%|###1      | 418M/1.34G [00:07<00:19, 48.0MB/s]Downloading:  31%|###1      | 423M/1.34G [00:07<00:21, 43.3MB/s]Downloading:  32%|###1      | 428M/1.34G [00:08<00:20, 44.1MB/s]Downloading:  32%|###2      | 434M/1.34G [00:08<00:19, 47.1MB/s]Downloading:  33%|###2      | 439M/1.34G [00:08<00:21, 41.3MB/s]Downloading:  33%|###3      | 446M/1.34G [00:08<00:18, 47.3MB/s]Downloading:  34%|###3      | 453M/1.34G [00:08<00:17, 49.6MB/s]Downloading:  34%|###4      | 461M/1.34G [00:08<00:15, 55.5MB/s]Downloading:  35%|###4      | 468M/1.34G [00:08<00:14, 59.1MB/s]Downloading:  35%|###5      | 475M/1.34G [00:08<00:16, 53.7MB/s]Downloading:  36%|###5      | 480M/1.34G [00:09<00:16, 51.4MB/s]Downloading:  36%|###6      | 488M/1.34G [00:09<00:15, 54.5MB/s]Downloading:  37%|###6      | 495M/1.34G [00:09<00:15, 55.7MB/s]Downloading:  37%|###7      | 503M/1.34G [00:09<00:13, 61.3MB/s]Downloading:  38%|###7      | 511M/1.34G [00:09<00:12, 65.3MB/s]Downloading:  38%|###8      | 517M/1.34G [00:09<00:13, 62.3MB/s]Downloading:  39%|###9      | 525M/1.34G [00:09<00:12, 66.9MB/s]Downloading:  40%|###9      | 532M/1.34G [00:09<00:13, 61.0MB/s]Downloading:  40%|####      | 539M/1.34G [00:10<00:16, 47.4MB/s]Downloading:  41%|####      | 546M/1.34G [00:10<00:15, 52.2MB/s]Downloading:  41%|####1     | 553M/1.34G [00:10<00:13, 57.5MB/s]Downloading:  42%|####1     | 560M/1.34G [00:10<00:14, 56.0MB/s]Downloading:  42%|####2     | 566M/1.34G [00:10<00:17, 45.0MB/s]Downloading:  43%|####2     | 572M/1.34G [00:10<00:15, 50.0MB/s]Downloading:  43%|####3     | 579M/1.34G [00:10<00:15, 49.3MB/s]Downloading:  44%|####3     | 586M/1.34G [00:10<00:14, 53.7MB/s]Downloading:  44%|####4     | 592M/1.34G [00:10<00:13, 57.4MB/s]Downloading:  45%|####4     | 600M/1.34G [00:11<00:12, 61.2MB/s]Downloading:  45%|####5     | 607M/1.34G [00:11<00:11, 64.6MB/s]Downloading:  46%|####5     | 615M/1.34G [00:11<00:10, 67.3MB/s]Downloading:  46%|####6     | 622M/1.34G [00:11<00:10, 66.5MB/s]Downloading:  47%|####6     | 628M/1.34G [00:11<00:10, 66.6MB/s]Downloading:  47%|####7     | 635M/1.34G [00:11<00:12, 58.9MB/s]Downloading:  48%|####7     | 641M/1.34G [00:11<00:14, 50.2MB/s]Downloading:  48%|####8     | 647M/1.34G [00:11<00:13, 53.2MB/s]Downloading:  49%|####8     | 655M/1.34G [00:12<00:11, 58.9MB/s]Downloading:  49%|####9     | 663M/1.34G [00:12<00:11, 57.1MB/s]Downloading:  50%|####9     | 671M/1.34G [00:12<00:10, 62.2MB/s]Downloading:  50%|#####     | 677M/1.34G [00:12<00:11, 57.5MB/s]Downloading:  51%|#####     | 684M/1.34G [00:12<00:11, 59.4MB/s]Downloading:  51%|#####1    | 690M/1.34G [00:12<00:12, 50.9MB/s]Downloading:  52%|#####1    | 696M/1.34G [00:12<00:12, 51.6MB/s]Downloading:  52%|#####2    | 704M/1.34G [00:12<00:11, 57.3MB/s]Downloading:  53%|#####2    | 710M/1.34G [00:13<00:12, 51.8MB/s]Downloading:  53%|#####3    | 716M/1.34G [00:13<00:11, 54.9MB/s]Downloading:  54%|#####3    | 723M/1.34G [00:13<00:10, 58.5MB/s]Downloading:  54%|#####4    | 730M/1.34G [00:13<00:10, 60.6MB/s]Downloading:  55%|#####4    | 737M/1.34G [00:13<00:09, 63.9MB/s]Downloading:  55%|#####5    | 744M/1.34G [00:13<00:09, 65.3MB/s]Downloading:  56%|#####5    | 751M/1.34G [00:13<00:09, 65.3MB/s]Downloading:  56%|#####6    | 758M/1.34G [00:13<00:11, 49.2MB/s]Downloading:  57%|#####6    | 763M/1.34G [00:13<00:13, 43.8MB/s]Downloading:  57%|#####7    | 768M/1.34G [00:14<00:13, 43.1MB/s]Downloading:  57%|#####7    | 773M/1.34G [00:14<00:13, 43.1MB/s]Downloading:  58%|#####8    | 780M/1.34G [00:14<00:11, 49.4MB/s]Downloading:  59%|#####8    | 788M/1.34G [00:14<00:10, 55.1MB/s]Downloading:  59%|#####9    | 794M/1.34G [00:14<00:10, 52.4MB/s]Downloading:  60%|#####9    | 802M/1.34G [00:14<00:09, 57.6MB/s]Downloading:  60%|######    | 808M/1.34G [00:14<00:10, 53.3MB/s]Downloading:  60%|######    | 814M/1.34G [00:14<00:09, 53.7MB/s]Downloading:  61%|######    | 820M/1.34G [00:14<00:09, 57.2MB/s]Downloading:  61%|######1   | 827M/1.34G [00:15<00:08, 59.1MB/s]Downloading:  62%|######1   | 833M/1.34G [00:15<00:11, 46.3MB/s]Downloading:  62%|######2   | 839M/1.34G [00:15<00:11, 45.4MB/s]Downloading:  63%|######2   | 844M/1.34G [00:15<00:10, 46.6MB/s]Downloading:  63%|######3   | 850M/1.34G [00:15<00:09, 51.0MB/s]Downloading:  64%|######3   | 858M/1.34G [00:15<00:08, 56.6MB/s]Downloading:  64%|######4   | 866M/1.34G [00:15<00:07, 61.6MB/s]Downloading:  65%|######4   | 873M/1.34G [00:15<00:07, 63.9MB/s]Downloading:  65%|######5   | 879M/1.34G [00:16<00:07, 64.3MB/s]Downloading:  66%|######5   | 887M/1.34G [00:16<00:06, 67.6MB/s]Downloading:  66%|######6   | 894M/1.34G [00:16<00:06, 68.6MB/s]Downloading:  67%|######7   | 901M/1.34G [00:16<00:07, 56.3MB/s]Downloading:  68%|######7   | 909M/1.34G [00:16<00:07, 60.7MB/s]Downloading:  68%|######8   | 917M/1.34G [00:16<00:06, 65.4MB/s]Downloading:  69%|######8   | 924M/1.34G [00:16<00:09, 44.5MB/s]Downloading:  69%|######9   | 930M/1.34G [00:17<00:09, 41.7MB/s]Downloading:  70%|######9   | 935M/1.34G [00:17<00:12, 33.5MB/s]Downloading:  70%|######9   | 941M/1.34G [00:17<00:10, 38.8MB/s]Downloading:  70%|#######   | 948M/1.34G [00:17<00:09, 41.9MB/s]Downloading:  71%|#######   | 953M/1.34G [00:17<00:09, 40.3MB/s]Downloading:  71%|#######1  | 957M/1.34G [00:17<00:10, 36.2MB/s]Downloading:  72%|#######1  | 965M/1.34G [00:17<00:08, 42.8MB/s]Downloading:  72%|#######2  | 972M/1.34G [00:17<00:07, 49.2MB/s]Downloading:  73%|#######2  | 978M/1.34G [00:18<00:08, 43.1MB/s]Downloading:  73%|#######3  | 983M/1.34G [00:18<00:07, 45.4MB/s]Downloading:  73%|#######3  | 988M/1.34G [00:18<00:07, 45.9MB/s]Downloading:  74%|#######3  | 995M/1.34G [00:18<00:06, 50.4MB/s]Downloading:  74%|#######4  | 1.00G/1.34G [00:18<00:09, 36.2MB/s]Downloading:  75%|#######4  | 1.01G/1.34G [00:18<00:07, 43.2MB/s]Downloading:  75%|#######5  | 1.01G/1.34G [00:18<00:07, 42.0MB/s]Downloading:  76%|#######5  | 1.02G/1.34G [00:19<00:08, 39.7MB/s]Downloading:  76%|#######6  | 1.02G/1.34G [00:19<00:07, 40.4MB/s]Downloading:  77%|#######6  | 1.03G/1.34G [00:19<00:07, 44.0MB/s]Downloading:  77%|#######7  | 1.04G/1.34G [00:19<00:06, 50.8MB/s]Downloading:  78%|#######7  | 1.04G/1.34G [00:19<00:06, 44.5MB/s]Downloading:  78%|#######8  | 1.05G/1.34G [00:19<00:05, 50.9MB/s]Downloading:  79%|#######8  | 1.06G/1.34G [00:19<00:04, 57.6MB/s]Downloading:  79%|#######9  | 1.07G/1.34G [00:19<00:04, 57.6MB/s]Downloading:  80%|#######9  | 1.07G/1.34G [00:19<00:04, 59.1MB/s]Downloading:  80%|########  | 1.08G/1.34G [00:20<00:05, 53.1MB/s]Downloading:  81%|########  | 1.09G/1.34G [00:20<00:04, 58.2MB/s]Downloading:  81%|########1 | 1.09G/1.34G [00:20<00:04, 60.1MB/s]Downloading:  82%|########1 | 1.10G/1.34G [00:20<00:03, 62.2MB/s]Downloading:  82%|########2 | 1.11G/1.34G [00:20<00:03, 65.6MB/s]Downloading:  83%|########2 | 1.11G/1.34G [00:20<00:03, 66.4MB/s]Downloading:  83%|########3 | 1.12G/1.34G [00:20<00:03, 60.5MB/s]Downloading:  84%|########3 | 1.13G/1.34G [00:20<00:03, 55.0MB/s]Downloading:  84%|########4 | 1.13G/1.34G [00:21<00:04, 52.5MB/s]Downloading:  85%|########4 | 1.14G/1.34G [00:21<00:03, 56.7MB/s]Downloading:  85%|########5 | 1.15G/1.34G [00:21<00:03, 50.6MB/s]Downloading:  86%|########5 | 1.15G/1.34G [00:21<00:03, 48.8MB/s]Downloading:  86%|########6 | 1.16G/1.34G [00:21<00:03, 48.9MB/s]Downloading:  87%|########6 | 1.16G/1.34G [00:21<00:03, 51.6MB/s]Downloading:  87%|########6 | 1.17G/1.34G [00:21<00:03, 50.6MB/s]Downloading:  87%|########7 | 1.18G/1.34G [00:21<00:03, 45.3MB/s]Downloading:  88%|########7 | 1.18G/1.34G [00:22<00:03, 52.0MB/s]Downloading:  89%|########8 | 1.19G/1.34G [00:22<00:02, 57.1MB/s]Downloading:  89%|########9 | 1.20G/1.34G [00:22<00:02, 61.9MB/s]Downloading:  90%|########9 | 1.21G/1.34G [00:22<00:02, 66.7MB/s]Downloading:  90%|######### | 1.21G/1.34G [00:22<00:01, 70.3MB/s]Downloading:  91%|######### | 1.22G/1.34G [00:22<00:01, 62.5MB/s]Downloading:  91%|#########1| 1.23G/1.34G [00:22<00:01, 59.9MB/s]Downloading:  92%|#########1| 1.23G/1.34G [00:22<00:02, 50.5MB/s]Downloading:  92%|#########2| 1.24G/1.34G [00:22<00:01, 52.5MB/s]Downloading:  93%|#########2| 1.25G/1.34G [00:23<00:01, 57.0MB/s]Downloading:  93%|#########3| 1.25G/1.34G [00:23<00:01, 52.9MB/s]Downloading:  94%|#########3| 1.26G/1.34G [00:23<00:01, 50.7MB/s]Downloading:  94%|#########4| 1.27G/1.34G [00:23<00:01, 45.5MB/s]Downloading:  94%|#########4| 1.27G/1.34G [00:23<00:02, 34.1MB/s]Downloading:  95%|#########4| 1.28G/1.34G [00:23<00:01, 40.4MB/s]Downloading:  95%|#########5| 1.28G/1.34G [00:23<00:01, 38.6MB/s]Downloading:  96%|#########6| 1.29G/1.34G [00:24<00:01, 45.6MB/s]Downloading:  97%|#########6| 1.30G/1.34G [00:24<00:00, 51.1MB/s]Downloading:  97%|#########6| 1.30G/1.34G [00:24<00:00, 50.2MB/s]Downloading:  97%|#########7| 1.31G/1.34G [00:24<00:00, 48.9MB/s]Downloading:  98%|#########7| 1.32G/1.34G [00:24<00:00, 42.6MB/s]Downloading:  98%|#########8| 1.32G/1.34G [00:24<00:00, 44.8MB/s]Downloading:  99%|#########8| 1.33G/1.34G [00:24<00:00, 35.6MB/s]Downloading:  99%|#########9| 1.33G/1.34G [00:25<00:00, 42.4MB/s]Downloading: 100%|#########9| 1.34G/1.34G [00:25<00:00, 49.5MB/s]Downloading: 100%|##########| 1.34G/1.34G [00:25<00:00, 53.4MB/s]
+[ERROR 2020-12-13 21:48:05,269] function_runner.py: 254  Runner Thread raised error.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 179, in train_tune
+    trainer.fit(model)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 445, in fit
+    results = self.accelerator_backend.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 64, in train
+    results = self.train_or_test()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 66, in train_or_test
+    results = self.trainer.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 494, in train
+    self.train_loop.run_training_epoch()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 561, in run_training_epoch
+    batch_output = self.run_training_batch(batch, batch_idx, dataloader_idx)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 728, in run_training_batch
+    self.optimizer_step(optimizer, opt_idx, batch_idx, train_step_and_backward_closure)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 470, in optimizer_step
+    optimizer, batch_idx, opt_idx, train_step_and_backward_closure, *args, **kwargs
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 124, in optimizer_step
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/core/lightning.py", line 1380, in optimizer_step
+    optimizer.step(closure=optimizer_closure, *args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/autograd/grad_mode.py", line 26, in decorate_context
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/optim/adamw.py", line 65, in step
+    loss = closure()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 723, in train_step_and_backward_closure
+    self.trainer.hiddens
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 813, in training_step_and_backward
+    result = self.training_step(split_batch, batch_idx, opt_idx, hiddens)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 320, in training_step
+    training_step_output = self.trainer.accelerator_backend.training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 72, in training_step
+    output = self.__training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 80, in __training_step
+    output = self.trainer.model.training_step(*args)
+  File "pytorch_reimpl.py", line 110, in training_step
+    outputs = self.forward(**batch)
+  File "pytorch_reimpl.py", line 105, in forward
+    outputs = self.pretrained_model(**x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 1456, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 848, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 483, in forward
+    output_attentions,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 423, in forward
+    self.feed_forward_chunk, self.chunk_size_feed_forward, self.seq_len_dim, attention_output
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_utils.py", line 1700, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 430, in feed_forward_chunk
+    layer_output = self.output(intermediate_output, attention_output)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 370, in forward
+    hidden_states = self.dropout(hidden_states)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/dropout.py", line 58, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/functional.py", line 983, in dropout
+    else _VF.dropout(input, p, training))
+RuntimeError: CUDA out of memory. Tried to allocate 76.00 MiB (GPU 0; 14.73 GiB total capacity; 13.44 GiB already allocated; 43.88 MiB free; 13.62 GiB reserved in total by PyTorch)
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 267, in run
+    raise e
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 179, in train_tune
+    trainer.fit(model)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 445, in fit
+    results = self.accelerator_backend.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 64, in train
+    results = self.train_or_test()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 66, in train_or_test
+    results = self.trainer.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 494, in train
+    self.train_loop.run_training_epoch()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 561, in run_training_epoch
+    batch_output = self.run_training_batch(batch, batch_idx, dataloader_idx)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 728, in run_training_batch
+    self.optimizer_step(optimizer, opt_idx, batch_idx, train_step_and_backward_closure)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 470, in optimizer_step
+    optimizer, batch_idx, opt_idx, train_step_and_backward_closure, *args, **kwargs
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 124, in optimizer_step
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/core/lightning.py", line 1380, in optimizer_step
+    optimizer.step(closure=optimizer_closure, *args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/autograd/grad_mode.py", line 26, in decorate_context
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/optim/adamw.py", line 65, in step
+    loss = closure()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 723, in train_step_and_backward_closure
+    self.trainer.hiddens
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 813, in training_step_and_backward
+    result = self.training_step(split_batch, batch_idx, opt_idx, hiddens)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 320, in training_step
+    training_step_output = self.trainer.accelerator_backend.training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 72, in training_step
+    output = self.__training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 80, in __training_step
+    output = self.trainer.model.training_step(*args)
+  File "pytorch_reimpl.py", line 110, in training_step
+    outputs = self.forward(**batch)
+  File "pytorch_reimpl.py", line 105, in forward
+    outputs = self.pretrained_model(**x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 1456, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 848, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 483, in forward
+    output_attentions,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 423, in forward
+    self.feed_forward_chunk, self.chunk_size_feed_forward, self.seq_len_dim, attention_output
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_utils.py", line 1700, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 430, in feed_forward_chunk
+    layer_output = self.output(intermediate_output, attention_output)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 370, in forward
+    hidden_states = self.dropout(hidden_states)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/dropout.py", line 58, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/functional.py", line 983, in dropout
+    else _VF.dropout(input, p, training))
+RuntimeError: CUDA out of memory. Tried to allocate 76.00 MiB (GPU 0; 14.73 GiB total capacity; 13.44 GiB already allocated; 43.88 MiB free; 13.62 GiB reserved in total by PyTorch)
+

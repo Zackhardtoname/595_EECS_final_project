@@ -1,0 +1,47 @@
+/usr/local/lib/python3.6/dist-packages/pytorch_lightning/utilities/distributed.py:45: UserWarning: You have set progress_bar_refresh_rate < 20 on Google Colab. This may crash. Consider using progress_bar_refresh_rate >= 20 in Trainer.
+  warnings.warn(*args, **kwargs)
+Downloading:   0%|          | 0.00/1.59k [00:00<?, ?B/s]Downloading: 4.37kB [00:00, 4.86MB/s]                   
+Downloading:   0%|          | 0.00/1.05k [00:00<?, ?B/s]Downloading: 2.31kB [00:00, 2.75MB/s]                   
+Downloading:   0%|          | 0.00/3.79M [00:00<?, ?B/s]Downloading:   1%|1         | 52.2k/3.79M [00:00<00:09, 408kB/s]Downloading:   6%|5         | 226k/3.79M [00:00<00:06, 516kB/s] Downloading:  26%|##6       | 992k/3.79M [00:00<00:03, 710kB/s]Downloading: 100%|##########| 3.79M/3.79M [00:00<00:00, 8.00MB/s]
+Downloading:   0%|          | 0.00/423k [00:00<?, ?B/s]Downloading:  12%|#2        | 52.2k/423k [00:00<00:00, 407kB/s]Downloading:  49%|####9     | 209k/423k [00:00<00:00, 508kB/s] Downloading: 100%|##########| 423k/423k [00:00<00:00, 1.61MB/s]
+Downloading:   0%|          | 0.00/472k [00:00<?, ?B/s]Downloading:   9%|9         | 44.0k/472k [00:00<00:01, 345kB/s]Downloading:  46%|####6     | 218k/472k [00:00<00:00, 444kB/s] Downloading: 100%|##########| 472k/472k [00:00<00:00, 1.44MB/s]
+0 examples [00:00, ? examples/s]1818 examples [00:00, 18179.54 examples/s]3759 examples [00:00, 18531.18 examples/s]5849 examples [00:00, 19181.28 examples/s]7844 examples [00:00, 19405.26 examples/s]                                          0 examples [00:00, ? examples/s]                                0 examples [00:00, ? examples/s]1043 examples [00:00, 7177.82 examples/s]                                         Downloading:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading:  16%|#5        | 36.9k/232k [00:00<00:00, 296kB/s]Downloading:  83%|########3 | 193k/232k [00:00<00:00, 383kB/s] Downloading: 100%|##########| 232k/232k [00:00<00:00, 902kB/s]
+[ERROR 2020-12-13 21:34:09,459] function_runner.py: 254  Runner Thread raised error.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 178, in train_tune
+    model = Model(config)
+  File "pytorch_reimpl.py", line 71, in __init__
+    config["to_trim"])
+  File "pytorch_reimpl.py", line 35, in preprocess
+    x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
+  File "pytorch_reimpl.py", line 35, in <dictcomp>
+    x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
+RuntimeError: shape '[-1, 5, 80]' is invalid for input of size 3202875
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 267, in run
+    raise e
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 178, in train_tune
+    model = Model(config)
+  File "pytorch_reimpl.py", line 71, in __init__
+    config["to_trim"])
+  File "pytorch_reimpl.py", line 35, in preprocess
+    x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
+  File "pytorch_reimpl.py", line 35, in <dictcomp>
+    x = {k: v.view(-1, NUM_CHOICES, max_length)[:end] for k, v in x.items()}
+RuntimeError: shape '[-1, 5, 80]' is invalid for input of size 3202875
+

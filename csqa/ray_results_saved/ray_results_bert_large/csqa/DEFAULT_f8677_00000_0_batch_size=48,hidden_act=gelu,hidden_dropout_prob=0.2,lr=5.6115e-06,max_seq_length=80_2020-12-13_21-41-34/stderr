@@ -1,0 +1,67 @@
+/usr/local/lib/python3.6/dist-packages/pytorch_lightning/utilities/distributed.py:45: UserWarning: You have set progress_bar_refresh_rate < 20 on Google Colab. This may crash. Consider using progress_bar_refresh_rate >= 20 in Trainer.
+  warnings.warn(*args, **kwargs)
+Downloading:   0%|          | 0.00/1.59k [00:00<?, ?B/s]Downloading: 4.37kB [00:00, 3.67MB/s]                   
+Downloading:   0%|          | 0.00/1.05k [00:00<?, ?B/s]Downloading: 2.31kB [00:00, 2.28MB/s]                   
+Downloading:   0%|          | 0.00/3.79M [00:00<?, ?B/s]Downloading: 100%|##########| 3.79M/3.79M [00:00<00:00, 40.1MB/s]
+Downloading:   0%|          | 0.00/423k [00:00<?, ?B/s]Downloading: 100%|##########| 423k/423k [00:00<00:00, 25.7MB/s]
+Downloading:   0%|          | 0.00/472k [00:00<?, ?B/s]Downloading: 100%|##########| 472k/472k [00:00<00:00, 19.8MB/s]
+0 examples [00:00, ? examples/s]1715 examples [00:00, 17140.58 examples/s]3381 examples [00:00, 16992.58 examples/s]5159 examples [00:00, 17220.90 examples/s]6877 examples [00:00, 17207.91 examples/s]8561 examples [00:00, 17092.37 examples/s]                                          0 examples [00:00, ? examples/s]                                0 examples [00:00, ? examples/s]873 examples [00:00, 5385.00 examples/s]                                        Downloading:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading: 100%|##########| 232k/232k [00:00<00:00, 17.8MB/s]
+[ERROR 2020-12-13 21:41:39,846] function_runner.py: 254  Runner Thread raised error.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 178, in train_tune
+    model = Model(config)
+  File "pytorch_reimpl.py", line 71, in __init__
+    config["to_trim"])
+  File "pytorch_reimpl.py", line 33, in preprocess
+    max_length=max_length).data
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2214, in __call__
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2379, in batch_encode_plus
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2032, in _get_padding_truncation_strategies
+    padding_strategy = PaddingStrategy(padding)
+  File "/usr/lib/python3.6/enum.py", line 293, in __call__
+    return cls.__new__(cls, value)
+  File "/usr/lib/python3.6/enum.py", line 535, in __new__
+    return cls._missing_(value)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 116, in _missing_
+    % (value, cls.__name__, str(list(cls._value2member_map_.keys())))
+ValueError: 80 is not a valid PaddingStrategy, please select one of ['longest', 'max_length', 'do_not_pad']
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 267, in run
+    raise e
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 178, in train_tune
+    model = Model(config)
+  File "pytorch_reimpl.py", line 71, in __init__
+    config["to_trim"])
+  File "pytorch_reimpl.py", line 33, in preprocess
+    max_length=max_length).data
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2214, in __call__
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2379, in batch_encode_plus
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 2032, in _get_padding_truncation_strategies
+    padding_strategy = PaddingStrategy(padding)
+  File "/usr/lib/python3.6/enum.py", line 293, in __call__
+    return cls.__new__(cls, value)
+  File "/usr/lib/python3.6/enum.py", line 535, in __new__
+    return cls._missing_(value)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_base.py", line 116, in _missing_
+    % (value, cls.__name__, str(list(cls._value2member_map_.keys())))
+ValueError: 80 is not a valid PaddingStrategy, please select one of ['longest', 'max_length', 'do_not_pad']
+

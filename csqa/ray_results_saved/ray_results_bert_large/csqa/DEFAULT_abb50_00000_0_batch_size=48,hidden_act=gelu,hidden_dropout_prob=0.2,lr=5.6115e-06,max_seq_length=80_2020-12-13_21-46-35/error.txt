@@ -1,0 +1,95 @@
+Failure # 1 (occurred at 2020-12-13_21-48-05)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/trial_runner.py", line 726, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/ray_trial_executor.py", line 489, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/usr/local/lib/python3.6/dist-packages/ray/worker.py", line 1452, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(TuneError): [36mray::ImplicitFunc.train()[39m (pid=516, ip=172.28.0.2)
+  File "python/ray/_raylet.pyx", line 482, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 436, in ray._raylet.execute_task.function_executor
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/trainable.py", line 336, in train
+    result = self.step()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 366, in step
+    self._report_thread_runner_error(block=True)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 513, in _report_thread_runner_error
+    .format(err_tb_str)))
+ray.tune.error.TuneError: Trial raised an exception. Traceback:
+[36mray::ImplicitFunc.train()[39m (pid=516, ip=172.28.0.2)
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 316, in entrypoint
+    self._status_reporter.get_checkpoint())
+  File "/usr/local/lib/python3.6/dist-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "pytorch_reimpl.py", line 179, in train_tune
+    trainer.fit(model)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 445, in fit
+    results = self.accelerator_backend.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 64, in train
+    results = self.train_or_test()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 66, in train_or_test
+    results = self.trainer.train()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/trainer.py", line 494, in train
+    self.train_loop.run_training_epoch()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 561, in run_training_epoch
+    batch_output = self.run_training_batch(batch, batch_idx, dataloader_idx)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 728, in run_training_batch
+    self.optimizer_step(optimizer, opt_idx, batch_idx, train_step_and_backward_closure)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 470, in optimizer_step
+    optimizer, batch_idx, opt_idx, train_step_and_backward_closure, *args, **kwargs
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/accelerator.py", line 124, in optimizer_step
+    **kwargs,
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/core/lightning.py", line 1380, in optimizer_step
+    optimizer.step(closure=optimizer_closure, *args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/autograd/grad_mode.py", line 26, in decorate_context
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/optim/adamw.py", line 65, in step
+    loss = closure()
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 723, in train_step_and_backward_closure
+    self.trainer.hiddens
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 813, in training_step_and_backward
+    result = self.training_step(split_batch, batch_idx, opt_idx, hiddens)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/trainer/training_loop.py", line 320, in training_step
+    training_step_output = self.trainer.accelerator_backend.training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 72, in training_step
+    output = self.__training_step(args)
+  File "/usr/local/lib/python3.6/dist-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 80, in __training_step
+    output = self.trainer.model.training_step(*args)
+  File "pytorch_reimpl.py", line 110, in training_step
+    outputs = self.forward(**batch)
+  File "pytorch_reimpl.py", line 105, in forward
+    outputs = self.pretrained_model(**x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 1456, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 848, in forward
+    return_dict=return_dict,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 483, in forward
+    output_attentions,
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 423, in forward
+    self.feed_forward_chunk, self.chunk_size_feed_forward, self.seq_len_dim, attention_output
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_utils.py", line 1700, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 430, in feed_forward_chunk
+    layer_output = self.output(intermediate_output, attention_output)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/transformers/modeling_bert.py", line 370, in forward
+    hidden_states = self.dropout(hidden_states)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/dropout.py", line 58, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/functional.py", line 983, in dropout
+    else _VF.dropout(input, p, training))
+RuntimeError: CUDA out of memory. Tried to allocate 76.00 MiB (GPU 0; 14.73 GiB total capacity; 13.44 GiB already allocated; 43.88 MiB free; 13.62 GiB reserved in total by PyTorch)
+

@@ -1,0 +1,118 @@
+[ERROR 2020-12-13 06:38:06,045] function_runner.py: 254  Runner Thread raised error.
+Traceback (most recent call last):
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 315, in entrypoint
+    return self._trainable_func(self.config, self._status_reporter,
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 177, in train_tune
+    trainer.fit(model)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 445, in fit
+    results = self.accelerator_backend.train()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 64, in train
+    results = self.train_or_test()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/accelerator.py", line 66, in train_or_test
+    results = self.trainer.train()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 467, in train
+    self.run_sanity_check(self.get_model())
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 659, in run_sanity_check
+    _, eval_results = self.run_evaluation(test_mode=False, max_batches=self.num_sanity_val_batches)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 579, in run_evaluation
+    output = self.evaluation_loop.evaluation_step(test_mode, batch, batch_idx, dataloader_idx)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/evaluation_loop.py", line 171, in evaluation_step
+    output = self.trainer.accelerator_backend.validation_step(args)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 88, in validation_step
+    output = self.__validation_step(args)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 96, in __validation_step
+    output = self.trainer.model.validation_step(*args)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 117, in validation_step
+    outputs = self.forward(**batch)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 102, in forward
+    outputs = self.pretrained_model(**x)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 1447, in forward
+    outputs = self.bert(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 840, in forward
+    encoder_outputs = self.encoder(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 477, in forward
+    layer_outputs = layer_module(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 422, in forward
+    layer_output = apply_chunking_to_forward(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_utils.py", line 1700, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 429, in feed_forward_chunk
+    intermediate_output = self.intermediate(attention_output)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 357, in forward
+    hidden_states = self.intermediate_act_fn(hidden_states)
+TypeError: 'float' object is not callable
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 267, in run
+    raise e
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 248, in run
+    self._entrypoint()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 315, in entrypoint
+    return self._trainable_func(self.config, self._status_reporter,
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/ray/tune/function_runner.py", line 575, in _trainable_func
+    output = fn()
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 177, in train_tune
+    trainer.fit(model)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 445, in fit
+    results = self.accelerator_backend.train()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 64, in train
+    results = self.train_or_test()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/accelerator.py", line 66, in train_or_test
+    results = self.trainer.train()
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 467, in train
+    self.run_sanity_check(self.get_model())
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 659, in run_sanity_check
+    _, eval_results = self.run_evaluation(test_mode=False, max_batches=self.num_sanity_val_batches)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 579, in run_evaluation
+    output = self.evaluation_loop.evaluation_step(test_mode, batch, batch_idx, dataloader_idx)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/evaluation_loop.py", line 171, in evaluation_step
+    output = self.trainer.accelerator_backend.validation_step(args)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 88, in validation_step
+    output = self.__validation_step(args)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/gpu_accelerator.py", line 96, in __validation_step
+    output = self.trainer.model.validation_step(*args)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 117, in validation_step
+    outputs = self.forward(**batch)
+  File "/home/zack/github/595_EECS_final_project/csqa/pytorch_reimpl.py", line 102, in forward
+    outputs = self.pretrained_model(**x)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 1447, in forward
+    outputs = self.bert(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 840, in forward
+    encoder_outputs = self.encoder(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 477, in forward
+    layer_outputs = layer_module(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 422, in forward
+    layer_output = apply_chunking_to_forward(
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_utils.py", line 1700, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 429, in feed_forward_chunk
+    intermediate_output = self.intermediate(attention_output)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/zack/github/595_EECS_final_project/csqa/venv/lib/python3.8/site-packages/transformers/modeling_bert.py", line 357, in forward
+    hidden_states = self.intermediate_act_fn(hidden_states)
+TypeError: 'float' object is not callable

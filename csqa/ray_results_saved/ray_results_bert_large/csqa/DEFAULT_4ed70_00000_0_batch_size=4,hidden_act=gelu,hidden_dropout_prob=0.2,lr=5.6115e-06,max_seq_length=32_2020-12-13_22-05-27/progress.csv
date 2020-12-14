@@ -1,0 +1,2 @@
+loss,acc,time_this_iter_s,done,timesteps_total,episodes_total,training_iteration,experiment_id,date,timestamp,time_total_s,pid,hostname,node_ip,time_since_restore,timesteps_since_restore,iterations_since_restore,trial_id,experiment_tag
+1.0865418910980225,0.5792483687400818,1227.5284616947174,False,,,1,8fdf1cc7617d49f4be0655e3a082f9a6,2020-12-13_22-25-58,1607898358,1227.5284616947174,488,f8cefdf9654a,172.28.0.2,1227.5284616947174,0,1,4ed70_00000,"0_batch_size=4,hidden_act=gelu,hidden_dropout_prob=0.2,lr=5.6115e-06,max_seq_length=32"

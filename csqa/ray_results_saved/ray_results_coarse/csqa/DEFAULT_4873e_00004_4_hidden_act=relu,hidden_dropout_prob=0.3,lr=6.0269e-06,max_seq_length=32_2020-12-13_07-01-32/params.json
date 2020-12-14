@@ -1,0 +1,6 @@
+{
+  "hidden_act": "relu",
+  "hidden_dropout_prob": 0.3,
+  "lr": 6.026889128682526e-06,
+  "max_seq_length": 32
+}

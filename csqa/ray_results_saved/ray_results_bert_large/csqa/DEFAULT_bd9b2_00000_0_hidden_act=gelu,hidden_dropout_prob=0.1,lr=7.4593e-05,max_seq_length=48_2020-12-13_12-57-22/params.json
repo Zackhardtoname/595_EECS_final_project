@@ -1,0 +1,11 @@
+{
+  "architecture": {
+    "model": "<class 'transformers.modeling_albert.AlbertForMultipleChoice'>",
+    "pretrained_model_name": "albert-base-v2",
+    "tokenizer": "<class 'transformers.tokenization_albert.AlbertTokenizer'>"
+  },
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "lr": 7.45934328572655e-05,
+  "max_seq_length": 48
+}

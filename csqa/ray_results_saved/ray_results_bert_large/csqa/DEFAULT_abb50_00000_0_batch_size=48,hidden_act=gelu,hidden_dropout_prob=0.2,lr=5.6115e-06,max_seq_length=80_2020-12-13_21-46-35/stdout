@@ -1,0 +1,8 @@
+Downloading and preparing dataset commonsense_qa/default (download: 4.46 MiB, generated: 2.08 MiB, post-processed: Unknown size, total: 6.54 MiB) to /root/.cache/huggingface/datasets/commonsense_qa/default/0.1.0/0e60f0ee8c8509e854ed897f65eb5b2e6ca22578d64cbc3812c79b527d7a7a29...
+Dataset commonsense_qa downloaded and prepared to /root/.cache/huggingface/datasets/commonsense_qa/default/0.1.0/0e60f0ee8c8509e854ed897f65eb5b2e6ca22578d64cbc3812c79b527d7a7a29. Subsequent calls will reuse this data.
+Validation sanity check: 0it [00:00, ?it/s]Validation sanity check:  50%|#####     | 1/2 [00:04<00:04,  4.16s/it]Validation sanity check: 100%|##########| 2/2 [00:07<00:00,  3.95s/it]
+
+validation_epoch_end
+
+
+                                                                      Training: 0it [00:00, ?it/s]Training:   0%|          | 0/204 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/204 [00:00<?, ?it/s] 
