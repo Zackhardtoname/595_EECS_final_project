@@ -24,9 +24,16 @@ hyper-parameters
 
 3. `python3 pytorch_reimpl.py`
 
+4. (optional) visualize the results
+
+    `tensorboard --logdir ray_results_saved/`
+
+   
+
    To opt out of fine-tuning, simply replace the ranges with the hyper-parameter choices above.
 
 ## Trained models 
 
 PyTorch checkpoints are here: https://drive.google.com/drive/folders/1-R5c0KTHsuL0iLA7NpWSW6IK2rE_Xb7G?usp=sharing
 
+ray_results_saved also contains the console logs from all the saved training processes
