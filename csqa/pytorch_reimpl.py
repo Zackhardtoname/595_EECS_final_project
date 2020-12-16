@@ -143,6 +143,9 @@ class Model(pl.LightningModule):
         outputs = self.forward(**batch)
         loss = outputs.loss
         reshaped_logits = outputs.logits.view(-1, NUM_CHOICES)
+        pred = torch.argmax(reshaped_logits, dim=1)
+        print(pred)
+        print(pred == labels)
         acc = acc_from_logits_and_labels(reshaped_logits, labels, self.accuracy)
 
         return {
@@ -200,9 +203,12 @@ if __name__ == "__main__":
         ray.init(num_gpus=1)
 
     rt_config = {
-        "lr": tune.loguniform(1e-6, 1e-4),
+        # "lr": tune.loguniform(1e-6, 1e-4),
+
+        # the following values are the results of fine-tuning
+        "lr": tune.choice([1.57513e-05]),
         "batch_size": tune.choice([32]),
-        "max_seq_length": tune.choice([60, 48, 32]),
+        "max_seq_length": tune.choice([48]),
         "hidden_dropout_prob": tune.choice([.1]),
         "hidden_act": tune.choice(["gelu"]),
         "architecture": {
@@ -227,9 +233,9 @@ if __name__ == "__main__":
             train_tune, logger=logger, epochs=3, gpus=config["use_gpu"],
         ),
         config=rt_config,
-        num_samples=6,
+        num_samples=1,
         resources_per_trial={
-            "cpu": 2,
+            "cpu": 10,
             "gpu": config["use_gpu"],
         },
         metric="acc",

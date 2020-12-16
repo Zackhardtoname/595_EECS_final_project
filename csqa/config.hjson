@@ -3,7 +3,7 @@
     # lowercase bool names for hjson
 
     # debugging
-    "to_trim": true
+    "to_trim": false
 
     # hparams
     "num_samples": 6
