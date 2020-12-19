@@ -1,0 +1,97 @@
+\begin{thebibliography}{14}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Agarap(2019)}]{agarap2019deep}
+Abien~Fred Agarap. 2019.
+\newblock \href {http://arxiv.org/abs/1803.08375} {Deep learning using
+  rectified linear units (relu)}.
+
+\bibitem[{Devlin et~al.(2019)Devlin, Chang, Lee, and
+  Toutanova}]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019.
+\newblock \href {http://arxiv.org/abs/1810.04805} {Bert: Pre-training of deep
+  bidirectional transformers for language understanding}.
+
+\bibitem[{Hendrycks and Gimpel(2020)}]{hendrycks2020gaussian}
+Dan Hendrycks and Kevin Gimpel. 2020.
+\newblock \href {http://arxiv.org/abs/1606.08415} {Gaussian error linear units
+  (gelus)}.
+
+\bibitem[{Lan et~al.(2020)Lan, Chen, Goodman, Gimpel, Sharma, and
+  Soricut}]{lan2020albert}
+Zhenzhong Lan, Mingda Chen, Sebastian Goodman, Kevin Gimpel, Piyush Sharma, and
+  Radu Soricut. 2020.
+\newblock \href {http://arxiv.org/abs/1909.11942} {Albert: A lite bert for
+  self-supervised learning of language representations}.
+
+\bibitem[{Liaw et~al.(2018)Liaw, Liang, Nishihara, Moritz, Gonzalez, and
+  Stoica}]{liaw2018tune}
+Richard Liaw, Eric Liang, Robert Nishihara, Philipp Moritz, Joseph~E Gonzalez,
+  and Ion Stoica. 2018.
+\newblock Tune: A research platform for distributed model selection and
+  training.
+\newblock \emph{arXiv preprint arXiv:1807.05118}.
+
+\bibitem[{Liu et~al.(2019)Liu, Ott, Goyal, Du, Joshi, Chen, Levy, Lewis,
+  Zettlemoyer, and Stoyanov}]{liu2019roberta}
+Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer
+  Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019.
+\newblock \href {http://arxiv.org/abs/1907.11692} {Roberta: A robustly
+  optimized bert pretraining approach}.
+
+\bibitem[{Ott et~al.(2019)Ott, Edunov, Baevski, Fan, Gross, Ng, Grangier, and
+  Auli}]{ott2019fairseq}
+Myle Ott, Sergey Edunov, Alexei Baevski, Angela Fan, Sam Gross, Nathan Ng,
+  David Grangier, and Michael Auli. 2019.
+\newblock fairseq: A fast, extensible toolkit for sequence modeling.
+\newblock In \emph{Proceedings of NAACL-HLT 2019: Demonstrations}.
+
+\bibitem[{Radford et~al.(2019)Radford, Wu, Child, Luan, Amodei, and
+  Sutskever}]{radford2019language}
+Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
+  Sutskever. 2019.
+\newblock Language models are unsupervised multitask learners.
+
+\bibitem[{Rajani et~al.(2019)Rajani, McCann, Xiong, and
+  Socher}]{rajani2019explain}
+Nazneen~Fatema Rajani, Bryan McCann, Caiming Xiong, and Richard Socher. 2019.
+\newblock \href {http://arxiv.org/abs/1906.02361} {Explain yourself! leveraging
+  language models for commonsense reasoning}.
+
+\bibitem[{Talmor et~al.(2019)Talmor, Herzig, Lourie, and
+  Berant}]{talmor2019commonsenseqa}
+Alon Talmor, Jonathan Herzig, Nicholas Lourie, and Jonathan Berant. 2019.
+\newblock \href {http://arxiv.org/abs/1811.00937} {Commonsenseqa: A question
+  answering challenge targeting commonsense knowledge}.
+
+\bibitem[{Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones,
+  Gomez, Kaiser, and Polosukhin}]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017.
+\newblock \href {http://arxiv.org/abs/1706.03762} {Attention is all you need}.
+
+\bibitem[{Williams et~al.(2018)Williams, Nangia, and Bowman}]{N18-1101}
+Adina Williams, Nikita Nangia, and Samuel Bowman. 2018.
+\newblock \href {http://aclweb.org/anthology/N18-1101} {A broad-coverage
+  challenge corpus for sentence understanding through inference}.
+\newblock In \emph{Proceedings of the 2018 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies, Volume 1 (Long Papers)}, pages 1112--1122. Association for
+  Computational Linguistics.
+
+\bibitem[{Zhang and Chai(2009)}]{zhang-chai-2009-know}
+Chen Zhang and Joyce Chai. 2009.
+\newblock \href {https://www.aclweb.org/anthology/W09-3930} {What do we know
+  about conversation participants: Experiments on conversation entailment}.
+\newblock In \emph{Proceedings of the {SIGDIAL} 2009 Conference}, pages
+  206--215, London, UK. Association for Computational Linguistics.
+
+\bibitem[{Zhang and Chai(2010)}]{zhang-chai-2010-towards}
+Chen Zhang and Joyce Chai. 2010.
+\newblock \href {https://www.aclweb.org/anthology/D10-1074} {Towards
+  conversation entailment: An empirical investigation}.
+\newblock In \emph{Proceedings of the 2010 Conference on Empirical Methods in
+  Natural Language Processing}, pages 756--766, Cambridge, MA. Association for
+  Computational Linguistics.
+
+\end{thebibliography}
